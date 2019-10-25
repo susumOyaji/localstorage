@@ -22,6 +22,11 @@ class _State extends State<MyApp> {
   var _switch1 = false;
   var _switch2 = false;
   var _switch3 = false;
+  String _text = 'Enter something...';
+  String stringValue="init";
+  bool boolValue;
+  int intValue;
+  double doubleValue;
 
   _saveBool(String key, bool value) async {
     var prefs = await SharedPreferences.getInstance();
@@ -37,8 +42,8 @@ class _State extends State<MyApp> {
     });
   }
 
-  //Saving String value
-  addStringToSF() async {
+//Saving String value
+addStringToSF() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setString('stringValue', "abc");
 }
@@ -55,18 +60,28 @@ addBoolToSF() async {
   prefs.setBool('boolValue', true);
 }
 
+//Read String
+getStringValues() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  //Return String
+  stringValue = prefs.getString('stringValue');
+}
+
 //Read data
 getValuesSF() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   //Return String
-  String stringValue = prefs.getString('stringValue');
+  stringValue = prefs.getString('stringValue');
+  _text = "stringValue"; 
   //Return bool
-  bool boolValue = prefs.getBool('boolValue');
+  boolValue = prefs.getBool('boolValue');
   //Return int
-  int intValue = prefs.getInt('intValue');
+  intValue = prefs.getInt('intValue');
   //Return double
-  double doubleValue = prefs.getDouble('doubleValue');
+  doubleValue = prefs.getDouble('doubleValue');
 }
+
+
 
 // Remove data
 removeValues() async {
@@ -87,8 +102,7 @@ SharedPreferences prefs = await SharedPreferences.getInstance();
 bool CheckValue = prefs.containsKey('value');
 }
 
-
-
+ 
 
 
   @override
@@ -138,7 +152,21 @@ bool CheckValue = prefs.containsKey('value');
                   });
                 },
               ),
-
+              Text(_text),
+              Container(
+                padding: EdgeInsets.all(16.0),
+                child: RaisedButton(
+                  child: Text('Submit'),
+                  onPressed: () => setState(
+                      () {
+                        //addStringToSF();
+                        //getStringValues();
+                        _text = "stringValue";
+                       //getValuesSF();
+                      },
+                    ),
+              ),
+            ), 
               
             ],
           ),
