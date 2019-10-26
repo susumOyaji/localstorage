@@ -23,7 +23,10 @@ class _State extends State<MyApp> {
   var _switch2 = false;
   var _switch3 = false;
   var _stringValue = "";
+  var _nikkei = "";
+  var _djv = "";
 
+  String nikkei;
   String stringValue;
   bool boolValue;
   int intValue;
@@ -44,6 +47,9 @@ class _State extends State<MyApp> {
     var prefs = await SharedPreferences.getInstance();
     setState(() {
       _stringValue = prefs.getString('stringValue') ?? "";
+      _djv = prefs.getString('djv') ?? ""; //Dow averege
+      nikkei = prefs.getString('998074') ?? ""; //Nikkei averege
+
       _switch1 = prefs.getBool('bool1') ?? false;
       _switch2 = prefs.getBool('bool2') ?? false;
       _switch3 = prefs.getBool('bool3') ?? false;
@@ -115,7 +121,11 @@ bool CheckValue = prefs.containsKey('value');
 
   @override
   void initState() {
+    _saveString('_998074','0');
+    _saveString('_djv','0');
+
     _restoreValues();
+
     super.initState();
   }
 
@@ -169,7 +179,7 @@ bool CheckValue = prefs.containsKey('value');
                       () {
                         //addStringToSF();
                         //getStringValues();
-                        _stringValue = "onpressed";
+                        _stringValue = nikkei;
                         _saveString("stringValue", _stringValue);
                        //getValuesSF();
                       },
@@ -183,15 +193,18 @@ bool CheckValue = prefs.containsKey('value');
                 chipDesign("Food", Color(0xFF4fc3f7)),
                 chipDesign("Lifestyle", Color(0xFFffb74d)),
                 chipDesign("Health", Color(0xFFff8a65)),
-                chipDesign("Sports", Color(0xFF9575cd)),
-                chipDesign("Nature", Color(0xFF4db6ac)),
-                chipDesign("Fashion", Color(0xFFf06292)),
-                chipDesign("Heritage", Color(0xFFa1887f)),
-                chipDesign("City Life", Color(0xFF90a4ae)),
-                chipDesign("Entertainment", Color(0xFFba68c8)),
-                Chip(
-                  avatar: CircleAvatar(backgroundColor: Colors.blue.shade900, child: Text('AH')),
-                  label: Text('Hamilton'),
+              
+                Card(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      const ListTile(
+                        leading: Icon(Icons.album),
+                        title: Text(_998074),
+                        subtitle: Text('Music by Julie Gable. Lyrics by Sidney Stein.'),
+                    ),
+                    ],
+                  ),
                 ),
                 Chip(
                   avatar: CircleAvatar(backgroundColor: Colors.blue.shade900, child: Text('ML')),
