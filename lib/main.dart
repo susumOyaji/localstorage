@@ -22,8 +22,9 @@ class _State extends State<MyApp> {
   var _switch1 = false;
   var _switch2 = false;
   var _switch3 = false;
-  String _text = 'Enter something...';
-  String stringValue="init";
+  var _stringValue = "";
+
+  String stringValue;
   bool boolValue;
   int intValue;
   double doubleValue;
@@ -33,12 +34,20 @@ class _State extends State<MyApp> {
     prefs.setBool(key, value);
   }
 
+  _saveString(String key,String value) async {
+    var prefs = await SharedPreferences.getInstance();
+    prefs.setString(key, value);
+  }
+
+
   _restoreValues() async {
     var prefs = await SharedPreferences.getInstance();
     setState(() {
+      _stringValue = prefs.getString('stringValue') ?? 0;
       _switch1 = prefs.getBool('bool1') ?? false;
       _switch2 = prefs.getBool('bool2') ?? false;
       _switch3 = prefs.getBool('bool3') ?? false;
+       
     });
   }
 
@@ -72,7 +81,6 @@ getValuesSF() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   //Return String
   stringValue = prefs.getString('stringValue');
-  _text = "stringValue"; 
   //Return bool
   boolValue = prefs.getBool('boolValue');
   //Return int
@@ -152,7 +160,7 @@ bool CheckValue = prefs.containsKey('value');
                   });
                 },
               ),
-              Text(_text),
+              Text(_stringValue),
               Container(
                 padding: EdgeInsets.all(16.0),
                 child: RaisedButton(
@@ -161,7 +169,8 @@ bool CheckValue = prefs.containsKey('value');
                       () {
                         //addStringToSF();
                         //getStringValues();
-                        _text = "stringValue";
+                        _stringValue = "onpressed";
+                        _saveString("stringValue", _stringValue);
                        //getValuesSF();
                       },
                     ),
