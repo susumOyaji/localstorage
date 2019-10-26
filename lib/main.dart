@@ -43,7 +43,7 @@ class _State extends State<MyApp> {
   _restoreValues() async {
     var prefs = await SharedPreferences.getInstance();
     setState(() {
-      _stringValue = prefs.getString('stringValue') ?? 0;
+      _stringValue = prefs.getString('stringValue') ?? "";
       _switch1 = prefs.getBool('bool1') ?? false;
       _switch2 = prefs.getBool('bool2') ?? false;
       _switch3 = prefs.getBool('bool3') ?? false;
@@ -176,6 +176,37 @@ bool CheckValue = prefs.containsKey('value');
                     ),
               ),
             ), 
+            Wrap(
+              spacing: 8.0, // gap between adjacent chips
+              runSpacing: 4.0, // gap between lines
+              children: <Widget>[
+                chipDesign("Food", Color(0xFF4fc3f7)),
+                chipDesign("Lifestyle", Color(0xFFffb74d)),
+                chipDesign("Health", Color(0xFFff8a65)),
+                chipDesign("Sports", Color(0xFF9575cd)),
+                chipDesign("Nature", Color(0xFF4db6ac)),
+                chipDesign("Fashion", Color(0xFFf06292)),
+                chipDesign("Heritage", Color(0xFFa1887f)),
+                chipDesign("City Life", Color(0xFF90a4ae)),
+                chipDesign("Entertainment", Color(0xFFba68c8)),
+                Chip(
+                  avatar: CircleAvatar(backgroundColor: Colors.blue.shade900, child: Text('AH')),
+                  label: Text('Hamilton'),
+                ),
+                Chip(
+                  avatar: CircleAvatar(backgroundColor: Colors.blue.shade900, child: Text('ML')),
+                  label: Text('Lafayette'),
+                ),
+                Chip(
+                  avatar: CircleAvatar(backgroundColor: Colors.blue.shade900, child: Text('HM')),
+                  label: Text('Mulligan'),
+                ),
+                Chip(
+                  avatar: CircleAvatar(backgroundColor: Colors.blue.shade900, child: Text('JL')),
+                  label: Text('Laurens'),
+                ),
+              ],
+            )
               
             ],
           ),
@@ -184,3 +215,25 @@ bool CheckValue = prefs.containsKey('value');
     );
   }
 }
+
+
+
+///Common method to design a chip with different properties
+///like label and background color
+Widget chipDesign(String label, Color color) => Container(
+      child: Chip(
+        label: Text(
+          label,
+          style: TextStyle(
+              color: Colors.white, fontFamily: 'Raleway'),
+        ),
+        backgroundColor: color,
+        elevation: 4,
+        shadowColor: Colors.grey[50],
+        padding: EdgeInsets.all(4),
+      ),
+      margin: EdgeInsets.only(left: 12, right: 12, top: 2, bottom: 2),
+    );
+
+
+
