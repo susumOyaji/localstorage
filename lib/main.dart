@@ -25,6 +25,8 @@ class _State extends State<MyApp> {
   var _stringValue = "";
   var _nikkei = "";
   var _djv = "";
+  var vested = 300; //既得株数
+
 
   String nikkei;
   String stringValue;
@@ -135,96 +137,47 @@ bool CheckValue = prefs.containsKey('value');
       appBar: AppBar(
         title: Text('Pref Test'),
       ),
-      body: Container(
-        padding: EdgeInsets.all(20.0),
-        child: Center(
-          child: Column(
-            children: <Widget>[
-              SwitchListTile(
-                value: _switch1,
-                title: Text('Setting 1'),
-                onChanged: (bool value) {
-                  setState(() {
-                    _switch1 = value;
-                    _saveBool('bool1', value);
-                  });
-                },
-              ),
-              SwitchListTile(
-                value: _switch2,
-                title: Text('Setting 2'),
-                onChanged: (bool value) {
-                  setState(() {
-                    _switch2 = value;
-                    _saveBool('bool2', value);
-                  });
-                },
-              ),
-              SwitchListTile(
-                value: _switch3,
-                title: Text('Setting 3'),
-                onChanged: (bool value) {
-                  setState(() {
-                    _switch3 = value;
-                    _saveBool('bool3', value);
-                  });
-                },
-              ),
-              Text(_stringValue),
-              Container(
-                padding: EdgeInsets.all(16.0),
-                child: RaisedButton(
-                  child: Text('Submit'),
-                  onPressed: () => setState(
-                      () {
-                        //addStringToSF();
-                        //getStringValues();
-                        _stringValue = nikkei;
-                        _saveString("stringValue", _stringValue);
-                       //getValuesSF();
-                      },
-                    ),
-              ),
-            ), 
-            Wrap(
-              spacing: 8.0, // gap between adjacent chips
-              runSpacing: 4.0, // gap between lines
+      body: Wrap(
+        spacing: 8.0, // gap between adjacent chips
+        runSpacing: 4.0, // gap between lines
+        children: <Widget>[
+          ListView(
+            children: List.generate(2, (index) {
+            return Card(
+            child: Row(
               children: <Widget>[
-                chipDesign("Food", Color(0xFF4fc3f7)),
-                chipDesign("Lifestyle", Color(0xFFffb74d)),
-                chipDesign("Health", Color(0xFFff8a65)),
-              
-                Card(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      const ListTile(
-                        leading: Icon(Icons.album),
-                        title: Text(_998074),
-                        subtitle: Text('Music by Julie Gable. Lyrics by Sidney Stein.'),
-                    ),
-                    ],
-                  ),
-                ),
-                Chip(
-                  avatar: CircleAvatar(backgroundColor: Colors.blue.shade900, child: Text('ML')),
-                  label: Text('Lafayette'),
-                ),
-                Chip(
-                  avatar: CircleAvatar(backgroundColor: Colors.blue.shade900, child: Text('HM')),
-                  label: Text('Mulligan'),
-                ),
-                Chip(
-                  avatar: CircleAvatar(backgroundColor: Colors.blue.shade900, child: Text('JL')),
-                  label: Text('Laurens'),
-                ),
+                //Image.asset("assets/screen$index.jpg"),
+                Container(
+                    margin: EdgeInsets.all(10.0),
+                    child: ListTile(
+                      title: Text("screen$index.jpg"),
+                      leading: Icon(Icons.person),
+                      subtitle: Text("サブタイトル"),
+                    ),),
               ],
-            )
-              
-            ],
-          ),
-        ),
+            ),
+          );
+        },),
       ),
+      
+    Chip(
+      avatar: CircleAvatar(backgroundColor: Colors.blue.shade900, child: Text('AH')),
+      label: Text('Hamilton'),
+    ),
+    Chip(
+      avatar: CircleAvatar(backgroundColor: Colors.blue.shade900, child: Text('ML')),
+      label: Text('Lafayette'),
+    ),
+    Chip(
+      avatar: CircleAvatar(backgroundColor: Colors.blue.shade900, child: Text('HM')),
+      label: Text('Mulligan'),
+    ),
+    Chip(
+      avatar: CircleAvatar(backgroundColor: Colors.blue.shade900, child: Text('JL')),
+      label: Text('Laurens'),
+    ),
+  ],
+)
     );
   }
 }
