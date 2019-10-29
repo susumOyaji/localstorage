@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter/rendering.dart' show debugPaintSizeEnabled;
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-    debugPaintSizeEnabled = false;
+    debugPaintSizeEnabled = false;// Remove to suppress visual layout
     runApp(
       MaterialApp(
         home: MyApp(),
@@ -137,50 +137,122 @@ bool CheckValue = prefs.containsKey('value');
       appBar: AppBar(
         title: Text('Pref Test'),
       ),
-      body: Wrap(
-        spacing: 8.0, // gap between adjacent chips
-        runSpacing: 4.0, // gap between lines
-        children: <Widget>[
-          ListView(
-            children: List.generate(2, (index) {
-            return Card(
-            child: Row(
-              children: <Widget>[
-                //Image.asset("assets/screen$index.jpg"),
-                Container(
-                    margin: EdgeInsets.all(10.0),
-                    child: ListTile(
-                      title: Text("screen$index.jpg"),
-                      leading: Icon(Icons.person),
-                      subtitle: Text("サブタイトル"),
-                    ),),
-              ],
-            ),
+      body: Center(child: buildGrid()),
+     );
+    }
+
+    Widget buildRow() =>
+      // #docregion Row
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Text("Image.asset('images/pic1.jpg')"),
+          Text("Image.asset('images/pic2.jpg')"),
+          Text("Image.asset('images/pic3.jpg')"),
+        ],
+      );
+  // #enddocregion Row
+
+  Widget buildColumn() =>
+      // #docregion Column
+      Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          //Image.asset('images/pic1.jpg'),
+          //Image.asset('images/pic2.jpg'),
+          //Image.asset('images/pic3.jpg'),
+        ],
+      );
+  // #enddocregion Column
+
+  Widget buildGrid() => GridView.count(
+          // Create a grid with 2 columns. If you change the scrollDirection to
+          // horizontal, this produces 2 rows.
+          crossAxisCount: 2,// Generate 100 widgets that display their index in the List.
+          childAspectRatio: (2 / 1), //幅/高さ←比を計算していれる。
+          children: List.generate(10, (index) {
+            return  Container(
+              height: 10,
+              child: Card(
+                      child: Column(
+                        children: [
+                          ListTile(
+                            title: Text('Nikkei',
+                            style: TextStyle(fontWeight: FontWeight.w500)),
+                            subtitle: Text('99984'),
+                            leading: Icon(
+                              Icons.restaurant_menu,
+                              color: Colors.blue[500],
+                            ),
+                          ),
+                          Divider(),
+                          ListTile(
+                            title: Text('Item $index',
+                            style: TextStyle(fontWeight: FontWeight.w500)),
+                            leading: Icon(
+                              Icons.contact_phone,
+                              color: Colors.blue[500],
+                            ),
+                          ),
+                          ListTile(
+                            title: Text('costa@example.com'),
+                            leading: Icon(
+                            Icons.contact_mail,
+                              color: Colors.blue[500],
+                            ),
+                          ),
+                          ],
+                      ),
+                    ),
+                //Text(
+                //'Item $index',
+                //style: Theme.of(context).textTheme.headline,
+                //),
+            );
+          }),
           );
-        },),
-      ),
+        
+  
       
-    Chip(
-      avatar: CircleAvatar(backgroundColor: Colors.blue.shade900, child: Text('AH')),
-      label: Text('Hamilton'),
+      
+  Widget buildCard() => SizedBox(
+    height: 210,
+    child: Card(
+      child: Column(
+        children: [
+          ListTile(
+            title: Text('1625 Main Street',
+                style: TextStyle(fontWeight: FontWeight.w500)),
+            subtitle: Text('My City, CA 99984'),
+            leading: Icon(
+              Icons.restaurant_menu,
+              color: Colors.blue[500],
+            ),
+          ),
+          Divider(),
+          ListTile(
+            title: Text('(408) 555-1212',
+                style: TextStyle(fontWeight: FontWeight.w500)),
+            leading: Icon(
+              Icons.contact_phone,
+              color: Colors.blue[500],
+            ),
+          ),
+          ListTile(
+            title: Text('costa@example.com'),
+            leading: Icon(
+              Icons.contact_mail,
+              color: Colors.blue[500],
+            ),
+          ),
+        ],
+      ),
     ),
-    Chip(
-      avatar: CircleAvatar(backgroundColor: Colors.blue.shade900, child: Text('ML')),
-      label: Text('Lafayette'),
-    ),
-    Chip(
-      avatar: CircleAvatar(backgroundColor: Colors.blue.shade900, child: Text('HM')),
-      label: Text('Mulligan'),
-    ),
-    Chip(
-      avatar: CircleAvatar(backgroundColor: Colors.blue.shade900, child: Text('JL')),
-      label: Text('Laurens'),
-    ),
-  ],
-)
-    );
-  }
+  );
 }
+
+
+
 
 
 
