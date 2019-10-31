@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show debugPaintSizeEnabled;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:html';
+import 'dart:async';
 
 void main() {
     debugPaintSizeEnabled = false;// Remove to suppress visual layout
@@ -19,17 +21,17 @@ class MyApp extends StatefulWidget {
 }
 
 class _State extends State<MyApp> {
-  var _switch1 = false;
-  var _switch2 = false;
-  var _switch3 = false;
-  var _stringValue = "";
-  var _nikkei = "";
-  var _djv = "";
   var vested = 300; //既得株数
-
-
+  var code = ["Nikkei","Newyork"];
+ 
   String nikkei;
+  String newyork;
+
   String stringValue;
+  Future<String> stringValues;
+  String stringCode;
+  int counter = 99;
+
   bool boolValue;
   int intValue;
   double doubleValue;
@@ -44,18 +46,11 @@ class _State extends State<MyApp> {
     prefs.setString(key, value);
   }
 
-
   _restoreValues() async {
     var prefs = await SharedPreferences.getInstance();
     setState(() {
-      _stringValue = prefs.getString('stringValue') ?? "";
-      _djv = prefs.getString('djv') ?? ""; //Dow averege
-      nikkei = prefs.getString('998074') ?? ""; //Nikkei averege
-
-      _switch1 = prefs.getBool('bool1') ?? false;
-      _switch2 = prefs.getBool('bool2') ?? false;
-      _switch3 = prefs.getBool('bool3') ?? false;
-       
+      newyork = prefs.getString('^DJV') ?? ""; //Dow averege
+      nikkei = prefs.getString('Nikkei') ?? ""; //Nikkei averege
     });
   }
 
@@ -71,6 +66,12 @@ addIntToSF() async {
   prefs.setInt('intValue', 123);
 }
 
+addIntTosf(String code,int intvalue) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setInt(code, intvalue);
+}
+
+
 //Saving boolean value
 addBoolToSF() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -83,6 +84,14 @@ getStringValues() async {
   //Return String
   stringValue = prefs.getString('stringValue');
 }
+
+_getStringValues(int index) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  //Return String
+  stringCode = prefs.getString(code[index]);
+  
+}
+
 
 //Read data
 getValuesSF() async {
@@ -115,7 +124,24 @@ removeValues() async {
 //Check value if present or not?
 checkValues() async{
 SharedPreferences prefs = await SharedPreferences.getInstance();
-bool CheckValue = prefs.containsKey('value');
+//bool CheckValue = prefs.containsKey('value');
+}
+
+
+
+
+
+final Storage _localStorage = window.localStorage;
+
+Future save(String key,String id) async {
+    _localStorage[key] = id;
+}
+
+Future<String> getId(String key) async {
+  stringValue = _localStorage[key];
+}
+Future invalidate() async {
+    _localStorage.remove('selected_id');
 }
 
  
@@ -123,10 +149,23 @@ bool CheckValue = prefs.containsKey('value');
 
   @override
   void initState() {
-    _saveString('_998074','0');
-    _saveString('_djv','0');
+    save("Nikkei","998407");
+    save("Newyork","^DJV");
+    if (_localStorage.containsKey('selected_id')){
+      stringValue = "true";
+    }else{
+      stringValue = "false";
+    }
 
-    _restoreValues();
+
+    
+    //getId("Nikkei");
+    //addStringToSF();
+    //getStringValues();
+
+    //_saveMarket();
+   // _saveString("Nikkei","999999");
+   // _restoreValues();
 
     super.initState();
   }
@@ -169,48 +208,34 @@ bool CheckValue = prefs.containsKey('value');
           // Create a grid with 2 columns. If you change the scrollDirection to
           // horizontal, this produces 2 rows.
           crossAxisCount: 2,// Generate 100 widgets that display their index in the List.
-          childAspectRatio: (2 / 1), //幅/高さ←比を計算していれる。
-          children: List.generate(10, (index) {
+          scrollDirection: Axis.vertical,
+          padding: const EdgeInsets.all(5.0),
+          childAspectRatio: (1 / 1), //幅/高さ←比を計算していれる。
+          children: List.generate(2, (index) {
+            //String tempindex = index.toString();
+            getId(code[index].toString());
+            //_getStringValues(index);
             return  Container(
-              height: 10,
+              height: 5,
               child: Card(
+                      color: Colors.green,
                       child: Column(
                         children: [
                           ListTile(
-                            title: Text('Nikkei',
+                            title: Text("${code[index]}",
                             style: TextStyle(fontWeight: FontWeight.w500)),
-                            subtitle: Text('99984'),
+                            subtitle: Text( stringValue ?? "null string"),
                             leading: Icon(
                               Icons.restaurant_menu,
                               color: Colors.blue[500],
                             ),
                           ),
-                          Divider(),
-                          ListTile(
-                            title: Text('Item $index',
-                            style: TextStyle(fontWeight: FontWeight.w500)),
-                            leading: Icon(
-                              Icons.contact_phone,
-                              color: Colors.blue[500],
-                            ),
-                          ),
-                          ListTile(
-                            title: Text('costa@example.com'),
-                            leading: Icon(
-                            Icons.contact_mail,
-                              color: Colors.blue[500],
-                            ),
-                          ),
-                          ],
+                        ],
                       ),
                     ),
-                //Text(
-                //'Item $index',
-                //style: Theme.of(context).textTheme.headline,
-                //),
-            );
+                );
           }),
-          );
+    );
         
   
       
