@@ -1,8 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show debugPaintSizeEnabled;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:html';
 import 'dart:async';
+//import 'package:json_serializable/json_serializable.dart';
+//import 'package:json_annotation/json_annotation.dart';
+//# flutter
+//#export PATH="/Users/sumitomoshigeru/development/flutter/bin:$PATH"
+
+
 
 void main() {
     debugPaintSizeEnabled = false;// Remove to suppress visual layout
@@ -144,6 +152,10 @@ Future invalidate() async {
     _localStorage.remove('selected_id');
 }
 
+
+
+
+
  
 
 
@@ -176,7 +188,14 @@ Future invalidate() async {
       appBar: AppBar(
         title: Text('Pref Test'),
       ),
-      body: Center(child: buildGrid()),
+      body: Column(children: <Widget>[
+      Expanded(child:
+        Container(child:buildGrid()),
+      ),
+      Expanded(child:
+       Container(child: buildCard()),
+      ),
+      ],) 
      );
     }
 
@@ -230,11 +249,21 @@ Future invalidate() async {
                               color: Colors.blue[500],
                             ),
                           ),
+                          ListTile(
+                            title: Text("${code[index]}",
+                            style: TextStyle(fontWeight: FontWeight.w500)),
+                            subtitle: Text( stringValue ?? "null string"),
+                            leading: Icon(
+                              Icons.restaurant_menu,
+                              color: Colors.blue[500],
+                            ),
+                          ),
+                          //buildCard(),
                         ],
                       ),
-                    ),
+                    ), 
                 );
-          }),
+              }),
     );
         
   
