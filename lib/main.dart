@@ -188,14 +188,47 @@ Future invalidate() async {
       appBar: AppBar(
         title: Text('Pref Test'),
       ),
-      body: Column(children: <Widget>[
-      Expanded(child:
-        Container(child:buildGrid()),
-      ),
-      Expanded(child:
-       Container(child: buildCard()),
-      ),
-      ],) 
+      body: Container(child:Column(children: <Widget>[
+             Flexible(child: 
+              buildGrid(),
+            ),
+            
+            Flexible(child:
+            GridView.count(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.all(10.0), 
+              crossAxisCount: 3, // 1行に表示する数
+              crossAxisSpacing: 4.0, // 縦スペース
+              mainAxisSpacing: 4.0, // 横スペース
+              childAspectRatio: 0.7, // 高さ
+              shrinkWrap: true,
+              children: List.generate(100, (index) {
+                return Container(
+                  padding: const EdgeInsets.all(18.0),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                  ),
+                  child:GridTile(
+                    child: Icon(Icons.map),
+                    footer: Center(
+                      child: Text(
+                        'Meeage $index',
+                      ),
+                    )
+                  )
+                );
+              }),
+            ),
+            ),
+           
+
+          ],
+          )
+          )
+      
+      
+     
      );
     }
 
@@ -226,22 +259,22 @@ Future invalidate() async {
   Widget buildGrid() => GridView.count(
           // Create a grid with 2 columns. If you change the scrollDirection to
           // horizontal, this produces 2 rows.
-          crossAxisCount: 2,// Generate 100 widgets that display their index in the List.
-          scrollDirection: Axis.vertical,
+          crossAxisCount: 1,// Generate 100 widgets that display their index in the List.
+          scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.all(5.0),
-          childAspectRatio: (1 / 1), //幅/高さ←比を計算していれる。
-          children: List.generate(2, (index) {
+          childAspectRatio: 1.0, //幅/高さ←比を計算していれる。
+          children: List.generate(3, (index) {
             //String tempindex = index.toString();
-            getId(code[index].toString());
+            //getId(code[index].toString());
             //_getStringValues(index);
             return  Container(
-              height: 5,
+              //height: 150,
               child: Card(
                       color: Colors.green,
                       child: Column(
                         children: [
                           ListTile(
-                            title: Text("${code[index]}",
+                            title: Text("{code[index] }" ?? "nul to text ",
                             style: TextStyle(fontWeight: FontWeight.w500)),
                             subtitle: Text( stringValue ?? "null string"),
                             leading: Icon(
@@ -250,7 +283,7 @@ Future invalidate() async {
                             ),
                           ),
                           ListTile(
-                            title: Text("${code[index]}",
+                            title: Text("{code[index]}" ?? "nul to text",
                             style: TextStyle(fontWeight: FontWeight.w500)),
                             subtitle: Text( stringValue ?? "null string"),
                             leading: Icon(
