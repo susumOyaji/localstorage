@@ -28,6 +28,38 @@ class MyApp extends StatefulWidget {
   }
 }
 
+///
+String readstringValue;
+final Storage _localStorage = window.localStorage;
+
+
+//Data to Write
+Future save(String key,String id) async {
+    _localStorage[key] = id;
+}
+
+//Date to read
+Future getId(String key) async {
+  readstringValue = _localStorage[key];
+}
+
+//Data to delete
+Future invalidate() async {
+    _localStorage.remove('selected_id');
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 class _State extends State<MyApp> {
   var vested = 300; //既得株数
   var code = ["Nikkei","Newyork"];
@@ -35,7 +67,7 @@ class _State extends State<MyApp> {
   String nikkei;
   String newyork;
 
-  String stringValue;
+
   Future<String> stringValues;
   String stringCode;
   int counter = 99;
@@ -139,19 +171,7 @@ SharedPreferences prefs = await SharedPreferences.getInstance();
 
 
 
-final Storage _localStorage = window.localStorage;
 
-Future save(String key,String id) async {
-    _localStorage[key] = id;
-}
-
-Future getId(String key) async {
-  stringValue = _localStorage[key];
-}
-
-Future invalidate() async {
-    _localStorage.remove('selected_id');
-}
 
 
 

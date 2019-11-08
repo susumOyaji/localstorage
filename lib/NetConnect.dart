@@ -267,7 +267,7 @@ Future riseRate(List rategets) async {
 
 
 
-  Future getserchi(List getwidgets ) async {
+  Future getserchi(String key ) async {
     String gcompanyName = "";
     String grealValue = "";
     String grealChange = "";
@@ -279,10 +279,10 @@ Future riseRate(List rategets) async {
     //String responce = _"998407,0,0\n^DJI,0,0\n";
     // String responce ="998407.O,0,0\n^DJI,0,0\n";
     //List<Price> gprices = Finance.parse(responce);
-    String key = await getId("Nikkey");
+    String code = await getId(key);
 
-    for(Price price in gprices) {
-      http.Response response = await http.get(_geturlToFetch(price.code)/*dataURL*/);
+    //for(Price price in gprices) {
+      http.Response response = await http.get(_geturlToFetch(code)/*dataURL*/);
       final String json = response.body;
 
       String searchWord = "symbol"; //検索する文字列symbol
@@ -333,6 +333,8 @@ Future riseRate(List rategets) async {
         gpercent += json[foundIndex1 + i1]; //previous 前日比? %
       }
 
+
+      /*
       price.percentcheng=true;
       price.polar= change;
       //iconButtonToggle=true;//.polar;
@@ -352,10 +354,11 @@ Future riseRate(List rategets) async {
       grealValue = "";
       grealChange = "";
       gpercent = "";
-   }//for to end
+      */
+   //}//for to end
 
     //setState(() {
-      getwidgets =  gprices;
+    //  getwidgets =  gprices;
     //});
  }//load
 
@@ -376,13 +379,13 @@ Future loadData(List widgets) async {
     String responce = await storageControl.readStorage();
     //String responce = responceBuff;
     //String responce ="6758,200,1665\n9837,200,712\n6976,200,1746\n6753,0,0\n";
-    List<Price> prices = Finance.parse(responce);
+    //List<Price> prices = Finance.parse(responce);
 
 
-    for(Price price in prices) {
+    //for(Price price in prices) {
 
-      http.Response response = await http.get(_urlToFetch(price.code)/*dataURL*/);
-      final String json = response.body;
+    //  http.Response response = await http.get(_urlToFetch(price.code)/*dataURL*/);
+      final String json = "";//response.body;
 
       String searchWord = "symbol"; //検索する文字列symbol
       int foundIndex = json.indexOf(searchWord, 0);
@@ -431,6 +434,7 @@ Future loadData(List widgets) async {
         percent += json[foundIndex1 + i1]; //previous 前日比? %
       }
 
+      /*
       price.percentcheng=true;
       price.polar= change;
       //iconButtonToggle=true;//.polar;
@@ -454,15 +458,15 @@ Future loadData(List widgets) async {
       realValue = "";
       realChange = "";
       percent = "";
-  
-  }//for to end
+    */
+  //}//for to end
 
    //setState(() {
     assetTotal =  _assetTotal.toString();
     assetPrice =  _assetPrice.toString();
     assetValue = (_assetTotal - _assetPrice).toString();
   
-    widgets =  prices;
+    //widgets =  prices;
   //});
 
  }//load
