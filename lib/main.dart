@@ -145,9 +145,10 @@ Future save(String key,String id) async {
     _localStorage[key] = id;
 }
 
-Future<String> getId(String key) async {
+Future getId(String key) async {
   stringValue = _localStorage[key];
 }
+
 Future invalidate() async {
     _localStorage.remove('selected_id');
 }
@@ -161,23 +162,14 @@ Future invalidate() async {
 
   @override
   void initState() {
-    save("Nikkei","998407");
-    save("Newyork","^DJV");
-    if (_localStorage.containsKey('selected_id')){
+   if (_localStorage.containsKey('selected_id')){
       stringValue = "true";
     }else{
       stringValue = "false";
     }
-
-
     
-    //getId("Nikkei");
-    //addStringToSF();
-    //getStringValues();
-
-    //_saveMarket();
-   // _saveString("Nikkei","999999");
-   // _restoreValues();
+    save("Nikkei","998407");//Namekey, Codevalue
+    save("Newyork","^DJV");
 
     super.initState();
   }
@@ -188,53 +180,26 @@ Future invalidate() async {
       appBar: AppBar(
         title: Text('Pref Test'),
       ),
-      body: Container(child:Column(children: <Widget>[
-             Flexible(child: 
+      body: Container(
+          //height: 1000.0,
+          child:Column(
+          //mainAxisSize: MainAxisSize.max,  
+          //crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+            //Flexible(child:
               buildGrid(),
-            ),
-            
+            //),
             Flexible(child:
-            GridView.count(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.all(10.0), 
-              crossAxisCount: 3, // 1行に表示する数
-              crossAxisSpacing: 4.0, // 縦スペース
-              mainAxisSpacing: 4.0, // 横スペース
-              childAspectRatio: 0.7, // 高さ
-              shrinkWrap: true,
-              children: List.generate(100, (index) {
-                return Container(
-                  padding: const EdgeInsets.all(18.0),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                  ),
-                  child:GridTile(
-                    child: Icon(Icons.map),
-                    footer: Center(
-                      child: Text(
-                        'Meeage $index',
-                      ),
-                    )
-                  )
-                );
-              }),
+              buildGridV(),
             ),
-            ),
-           
-
-          ],
+            ],
+           )
           )
-          )
-      
-      
-     
-     );
-    }
+    );
+  }
+  
 
-    Widget buildRow() =>
-      // #docregion Row
-      Row(
+    Widget buildRow() =>Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Text("Image.asset('images/pic1.jpg')"),
@@ -244,33 +209,75 @@ Future invalidate() async {
       );
   // #enddocregion Row
 
-  Widget buildColumn() =>
-      // #docregion Column
-      Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          //Image.asset('images/pic1.jpg'),
-          //Image.asset('images/pic2.jpg'),
-          //Image.asset('images/pic3.jpg'),
-        ],
-      );
-  // #enddocregion Column
-
-  Widget buildGrid() => GridView.count(
+ 
+  Widget buildGrid() =>  SizedBox(
+   height: 200.0,
+    
+    child:GridView.count(
           // Create a grid with 2 columns. If you change the scrollDirection to
           // horizontal, this produces 2 rows.
           crossAxisCount: 1,// Generate 100 widgets that display their index in the List.
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.all(5.0),
-          childAspectRatio: 1.0, //幅/高さ←比を計算していれる。
-          children: List.generate(3, (index) {
+          childAspectRatio: (1/1), //幅/高さ←比を計算していれる。
+          
+          children: List.generate(2, (index) {
+            //String tempindex = index.toString();
+            getId(code[index].toString());
+            //_getStringValues(index);
+            return  
+            Container(
+              //height: 150,
+              child: Card(
+                      color: Colors.green,
+                      child: Column(
+                        children: [
+                          ListTile(
+                            title: Text("${code[index]}:${stringValue}" ?? "nul to text ",
+                            style: TextStyle(fontWeight: FontWeight.w500)),
+                            subtitle: Text( stringValue ?? "null string"),
+                            leading: Icon(
+                              Icons.restaurant_menu,
+                              color: Colors.blue[500],
+                            ),
+                          ),
+                          ListTile(
+                            title: Text("{code[index]}" ?? "nul to text",
+                            style: TextStyle(fontWeight: FontWeight.w500)),
+                            subtitle: Text( stringValue ?? "null string"),
+                            leading: Icon(
+                              Icons.restaurant_menu,
+                              color: Colors.blue[500],
+                            ),
+                          ),
+                          //buildCard(),
+                        ],
+                      ),
+                    ), 
+                    
+                );
+              }),
+    ),
+  ); 
+
+
+   Widget buildGridV() => GridView.count(
+          // Create a grid with 2 columns. If you change the scrollDirection to
+          // horizontal, this produces 2 rows.
+          crossAxisCount: 3,// Generate 100 widgets that display their index in the List.
+          scrollDirection: Axis.vertical,
+          padding: const EdgeInsets.all(5.0),
+          childAspectRatio: (1/0.5), //幅/高さ←比を計算していれる。
+          
+          children: List.generate(15, (index) {
             //String tempindex = index.toString();
             //getId(code[index].toString());
             //_getStringValues(index);
             return  Container(
-              //height: 150,
-              child: Card(
-                      color: Colors.green,
+              child: SizedBox(
+                child:/*Flexible(child:*/ 
+                Card(
+                      color: Colors.orange,
                       child: Column(
                         children: [
                           ListTile(
@@ -295,15 +302,20 @@ Future invalidate() async {
                         ],
                       ),
                     ), 
+               // ),
+              ), 
                 );
               }),
     );
-        
+  //); 
+
+
   
       
       
   Widget buildCard() => SizedBox(
     height: 210,
+     
     child: Card(
       child: Column(
         children: [

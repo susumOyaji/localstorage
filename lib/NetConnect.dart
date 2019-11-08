@@ -276,10 +276,10 @@ Future riseRate(List rategets) async {
     
 
     //String responce ="6758,200,1665\n9837,200,712\n6976,200,1746\n";
-    String responce ="998407,0,0\n^DJI,0,0\n";
+    //String responce = _"998407,0,0\n^DJI,0,0\n";
     // String responce ="998407.O,0,0\n^DJI,0,0\n";
-    List<Price> gprices = Finance.parse(responce);
-
+    //List<Price> gprices = Finance.parse(responce);
+    String key = await getId("Nikkey");
 
     for(Price price in gprices) {
       http.Response response = await http.get(_geturlToFetch(price.code)/*dataURL*/);
