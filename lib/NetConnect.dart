@@ -1,4 +1,7 @@
 //import 'package:flutter/material.dart';
+import 'dart:convert';
+
+import 'package:localstorage/main2.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'main.dart';
@@ -279,7 +282,7 @@ Future riseRate(List rategets) async {
     //String responce = _"998407,0,0\n^DJI,0,0\n";
     // String responce ="998407.O,0,0\n^DJI,0,0\n";
     //List<Price> gprices = Finance.parse(responce);
-    String code = await getId(key);
+    String code = await getItem(key);
 
     //for(Price price in gprices) {
       http.Response response = await http.get(_geturlToFetch(code)/*dataURL*/);
@@ -363,7 +366,7 @@ Future riseRate(List rategets) async {
  }//load
 
 
-Future loadData(List widgets) async {
+ loadData() async {
     String companyName = "";
     String realValue = "";
     String realChange = "";
@@ -374,18 +377,20 @@ Future loadData(List widgets) async {
     
       
 
-    storageControl.writeStorage("6758,200,1665\n9837,200,712\n6976,200,1746\n6753,0,0\n");
-   
-    String responce = await storageControl.readStorage();
+    //storageControl.writeStorage("6758,200,1665\n9837,200,712\n6976,200,1746\n6753,0,0\n");
+    //save("byCode","6758,200,1665\n9837,200,712\n6976,200,1746\n6753,0,0\n");
+    //String responce = await storageControl.readStorage();
+
+    //Future<String> bydata = getId("byCode");    
     //String responce = responceBuff;
-    //String responce ="6758,200,1665\n9837,200,712\n6976,200,1746\n6753,0,0\n";
-    //List<Price> prices = Finance.parse(responce);
+    String responce ="6758,200,1665\n9837,200,712\n6976,200,1746\n6753,0,0\n";
+    List prices = json.decode(responce);
 
 
-    //for(Price price in prices) {
+    for(String price in prices) {
 
-    //  http.Response response = await http.get(_urlToFetch(price.code)/*dataURL*/);
-      final String json = "";//response.body;
+      http.Response response = await http.get(_urlToFetch(price)/*dataURL*/);
+      final String json = response.body;
 
       String searchWord = "symbol"; //検索する文字列symbol
       int foundIndex = json.indexOf(searchWord, 0);
@@ -459,7 +464,7 @@ Future loadData(List widgets) async {
       realChange = "";
       percent = "";
     */
-  //}//for to end
+    }//for to end
 
    //setState(() {
     assetTotal =  _assetTotal.toString();
@@ -474,4 +479,33 @@ Future loadData(List widgets) async {
 
 
 
+
+
+
+// A function that converts a response body into a List<Photo>.
+List<Photo> parsePhotos(String responseBody) {
+  final parsed = json.decode(responseBody).cast<Map<String, dynamic>>();
+
+  return parsed.map<Photo>((json) => Photo.fromJson(json)).toList();
+}
+
+class Photo {
+  final int albumId;
+  final int id;
+  final String title;
+  final String url;
+  final String thumbnailUrl;
+
+  Photo({this.albumId, this.id, this.title, this.url, this.thumbnailUrl});
+
+  factory Photo.fromJson(Map<String, dynamic> json) {
+    return Photo(
+      albumId: json['albumId'] as int,
+      id: json['id'] as int,
+      title: json['title'] as String,
+      url: json['url'] as String,
+      thumbnailUrl: json['thumbnailUrl'] as String,
+    );
+  }
+}
 ////////////////////////////////////////////////////

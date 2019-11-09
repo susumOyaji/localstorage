@@ -1,396 +1,85 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart' show debugPaintSizeEnabled;
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:html';
-import 'dart:async';
-//import 'package:json_serializable/json_serializable.dart';
-//import 'package:json_annotation/json_annotation.dart';
-//# flutter
-//#export PATH="/Users/sumitomoshigeru/development/flutter/bin:$PATH"
+import 'package:http/http.dart' as http;
 
+Future<Post> fetchPost() async {
+  final response =
+      await http.get('https://jsonplaceholder.typicode.com/posts/1');
 
-
-void main() {
-    debugPaintSizeEnabled = false;// Remove to suppress visual layout
-    runApp(
-      MaterialApp(
-        home: MyApp(),
-      ),
-    );
+  if (response.statusCode == 200) {
+    // If the call to the server was successful, parse the JSON.
+    return Post.fromJson(json.decode(response.body));
+  } else {
+    // If that call was not successful, throw an error.
+    throw Exception('Failed to load post');
+  }
 }
+
+class Post {
+  final int userId;
+  final int id;
+  final String title;
+  final String body;
+
+  Post({this.userId, this.id, this.title, this.body});
+
+  factory Post.fromJson(Map<String, dynamic> json) {
+    return Post(
+      userId: json['userId'],
+      id: json['id'],
+      title: json['title'],
+      body: json['body'],
+    );
+  }
+}
+
+void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
+  MyApp({Key key}) : super(key: key);
+
   @override
-  State<StatefulWidget> createState() {
-    return _State();
-  }
+  _MyAppState createState() => _MyAppState();
 }
 
-///
-String readstringValue;
-final Storage _localStorage = window.localStorage;
-
-
-//Data to Write
-Future save(String key,String id) async {
-    _localStorage[key] = id;
-}
-
-//Date to read
-Future getId(String key) async {
-  readstringValue = _localStorage[key];
-}
-
-//Data to delete
-Future invalidate() async {
-    _localStorage.remove('selected_id');
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-class _State extends State<MyApp> {
-  var vested = 300; //既得株数
-  var code = ["Nikkei","Newyork"];
- 
-  String nikkei;
-  String newyork;
-
-
-  Future<String> stringValues;
-  String stringCode;
-  int counter = 99;
-
-  bool boolValue;
-  int intValue;
-  double doubleValue;
-
-  _saveBool(String key, bool value) async {
-    var prefs = await SharedPreferences.getInstance();
-    prefs.setBool(key, value);
-  }
-
-  _saveString(String key,String value) async {
-    var prefs = await SharedPreferences.getInstance();
-    prefs.setString(key, value);
-  }
-
-  _restoreValues() async {
-    var prefs = await SharedPreferences.getInstance();
-    setState(() {
-      newyork = prefs.getString('^DJV') ?? ""; //Dow averege
-      nikkei = prefs.getString('Nikkei') ?? ""; //Nikkei averege
-    });
-  }
-
-//Saving String value
-addStringToSF() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setString('stringValue', "abc");
-}
-
-//Saving double value
-addIntToSF() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setInt('intValue', 123);
-}
-
-addIntTosf(String code,int intvalue) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setInt(code, intvalue);
-}
-
-
-//Saving boolean value
-addBoolToSF() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setBool('boolValue', true);
-}
-
-//Read String
-getStringValues() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  //Return String
-  stringValue = prefs.getString('stringValue');
-}
-
-_getStringValues(int index) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  //Return String
-  stringCode = prefs.getString(code[index]);
-  
-}
-
-
-//Read data
-getValuesSF() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  //Return String
-  stringValue = prefs.getString('stringValue');
-  //Return bool
-  boolValue = prefs.getBool('boolValue');
-  //Return int
-  intValue = prefs.getInt('intValue');
-  //Return double
-  doubleValue = prefs.getDouble('doubleValue');
-}
-
-
-
-// Remove data
-removeValues() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  //Remove String
-  prefs.remove("stringValue");
-  //Remove bool
-  prefs.remove("boolValue");
-  //Remove int
-  prefs.remove("intValue");
-  //Remove double
-  prefs.remove("doubleValue");
-}
-
-//Check value if present or not?
-checkValues() async{
-SharedPreferences prefs = await SharedPreferences.getInstance();
-//bool CheckValue = prefs.containsKey('value');
-}
-
-
-
-
-
-
-
-
-
-
-
- 
-
+class _MyAppState extends State<MyApp> {
+Future<Post> post;
 
   @override
   void initState() {
-   if (_localStorage.containsKey('selected_id')){
-      stringValue = "true";
-    }else{
-      stringValue = "false";
-    }
-    
-    save("Nikkei","998407");//Namekey, Codevalue
-    save("Newyork","^DJV");
-
     super.initState();
+    post = fetchPost();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Pref Test'),
+    return MaterialApp(
+      title: 'Fetch Data Example',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
-      body: Container(
-          //height: 1000.0,
-          child:Column(
-          //mainAxisSize: MainAxisSize.max,  
-          //crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-            //Flexible(child:
-              buildGrid(),
-            //),
-            Flexible(child:
-              buildGridV(),
-            ),
-            ],
-           )
-          )
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Fetch Data Example'),
+        ),
+        body: Center(
+          child: FutureBuilder<Post>(
+            future: post,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Text(snapshot.data.title);
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+
+              // By default, show a loading spinner.
+              return CircularProgressIndicator();
+            },
+          ),
+        ),
+      ),
     );
   }
-  
-
-    Widget buildRow() =>Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Text("Image.asset('images/pic1.jpg')"),
-          Text("Image.asset('images/pic2.jpg')"),
-          Text("Image.asset('images/pic3.jpg')"),
-        ],
-      );
-  // #enddocregion Row
-
- 
-  Widget buildGrid() =>  SizedBox(
-   height: 200.0,
-    
-    child:GridView.count(
-          // Create a grid with 2 columns. If you change the scrollDirection to
-          // horizontal, this produces 2 rows.
-          crossAxisCount: 1,// Generate 100 widgets that display their index in the List.
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.all(5.0),
-          childAspectRatio: (1/1), //幅/高さ←比を計算していれる。
-          
-          children: List.generate(2, (index) {
-            //String tempindex = index.toString();
-            getId(code[index].toString());
-            //_getStringValues(index);
-            return  
-            Container(
-              //height: 150,
-              child: Card(
-                      color: Colors.green,
-                      child: Column(
-                        children: [
-                          ListTile(
-                            title: Text("${code[index]}:${stringValue}" ?? "nul to text ",
-                            style: TextStyle(fontWeight: FontWeight.w500)),
-                            subtitle: Text( stringValue ?? "null string"),
-                            leading: Icon(
-                              Icons.restaurant_menu,
-                              color: Colors.blue[500],
-                            ),
-                          ),
-                          ListTile(
-                            title: Text("{code[index]}" ?? "nul to text",
-                            style: TextStyle(fontWeight: FontWeight.w500)),
-                            subtitle: Text( stringValue ?? "null string"),
-                            leading: Icon(
-                              Icons.restaurant_menu,
-                              color: Colors.blue[500],
-                            ),
-                          ),
-                          //buildCard(),
-                        ],
-                      ),
-                    ), 
-                    
-                );
-              }),
-    ),
-  ); 
-
-
-   Widget buildGridV() => GridView.count(
-          // Create a grid with 2 columns. If you change the scrollDirection to
-          // horizontal, this produces 2 rows.
-          crossAxisCount: 3,// Generate 100 widgets that display their index in the List.
-          scrollDirection: Axis.vertical,
-          padding: const EdgeInsets.all(5.0),
-          childAspectRatio: (1/0.5), //幅/高さ←比を計算していれる。
-          
-          children: List.generate(15, (index) {
-            //String tempindex = index.toString();
-            //getId(code[index].toString());
-            //_getStringValues(index);
-            return  Container(
-              child: SizedBox(
-                child:/*Flexible(child:*/ 
-                Card(
-                      color: Colors.orange,
-                      child: Column(
-                        children: [
-                          ListTile(
-                            title: Text("{code[index] }" ?? "nul to text ",
-                            style: TextStyle(fontWeight: FontWeight.w500)),
-                            subtitle: Text( stringValue ?? "null string"),
-                            leading: Icon(
-                              Icons.restaurant_menu,
-                              color: Colors.blue[500],
-                            ),
-                          ),
-                          ListTile(
-                            title: Text("{code[index]}" ?? "nul to text",
-                            style: TextStyle(fontWeight: FontWeight.w500)),
-                            subtitle: Text( stringValue ?? "null string"),
-                            leading: Icon(
-                              Icons.restaurant_menu,
-                              color: Colors.blue[500],
-                            ),
-                          ),
-                          //buildCard(),
-                        ],
-                      ),
-                    ), 
-               // ),
-              ), 
-                );
-              }),
-    );
-  //); 
-
-
-  
-      
-      
-  Widget buildCard() => SizedBox(
-    height: 210,
-     
-    child: Card(
-      child: Column(
-        children: [
-          ListTile(
-            title: Text('1625 Main Street',
-                style: TextStyle(fontWeight: FontWeight.w500)),
-            subtitle: Text('My City, CA 99984'),
-            leading: Icon(
-              Icons.restaurant_menu,
-              color: Colors.blue[500],
-            ),
-          ),
-          Divider(),
-          ListTile(
-            title: Text('(408) 555-1212',
-                style: TextStyle(fontWeight: FontWeight.w500)),
-            leading: Icon(
-              Icons.contact_phone,
-              color: Colors.blue[500],
-            ),
-          ),
-          ListTile(
-            title: Text('costa@example.com'),
-            leading: Icon(
-              Icons.contact_mail,
-              color: Colors.blue[500],
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
 }
-
-
-
-
-
-
-///Common method to design a chip with different properties
-///like label and background color
-Widget chipDesign(String label, Color color) => Container(
-      child: Chip(
-        label: Text(
-          label,
-          style: TextStyle(
-              color: Colors.white, fontFamily: 'Raleway'),
-        ),
-        backgroundColor: color,
-        elevation: 4,
-        shadowColor: Colors.grey[50],
-        padding: EdgeInsets.all(4),
-      ),
-      margin: EdgeInsets.only(left: 12, right: 12, top: 2, bottom: 2),
-    );
-
-
-
