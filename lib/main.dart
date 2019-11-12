@@ -4,10 +4,42 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-Future<Post> fetchPost() async {
-  final response =
-      await http.get('https://jsonplaceholder.typicode.com/posts/1');
+Future fetch() async {
+   print("out1");
+  final  response =
+      //await http.get('https://jsonplaceholder.typicode.com/posts/1');
+      await http.get("https://stocks.finance.yahoo.co.jp/stocks/detail/?code=6758.T");
+      final String json = response.body;
 
+
+      //print(response);
+      //RegExp regexp = RegExp(r"^/?code=");
+      //String match = json;
+      //regexp.allMatches(response.body).forEach((match) {
+      //  String iconName = match.group(1);
+      //  String codePoint = match.group(2);
+        
+      //});
+
+      //RegExp match1 = RegExp(r"/[0-9]+/");
+      //print("abc123".allMatches(match1,0));        // => 123
+
+
+      //var invalidEmail = 'f@il@example.com';
+      //Iterable<Match> matches = new RegExp(/@'@').allMatches(invalidEmail);
+      //for (Match m in matches) {
+      //  print(m.group(0));
+      //}
+
+      RegExp regExp = new RegExp(r'/stoksPrice/\w+');
+      //String s = "http://example.com?id=some.thing.com&other=parameter; http://example.com?id=some1.thing.com";
+      Iterable<Match> matches = regExp.allMatches(json);
+      for (Match match in matches) {
+        print(match.group(1));
+      }
+
+
+  /*    
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON.
     return Post.fromJson(json.decode(response.body));
@@ -15,25 +47,18 @@ Future<Post> fetchPost() async {
     // If that call was not successful, throw an error.
     throw Exception('Failed to load post');
   }
+  */
+//////////////////////////////
+ 
+
+
+
 }
 
-class Post {
-  final int userId;
-  final int id;
-  final String title;
-  final String body;
 
-  Post({this.userId, this.id, this.title, this.body});
 
-  factory Post.fromJson(Map<String, dynamic> json) {
-    return Post(
-      userId: json['userId'],
-      id: json['id'],
-      title: json['title'],
-      body: json['body'],
-    );
-  }
-}
+
+
 
 void main() => runApp(MyApp());
 
@@ -45,12 +70,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-Future<Post> post;
+Future post;
 
   @override
   void initState() {
     super.initState();
-    post = fetchPost();
+    post = fetch();
+    print("out");
   }
 
   @override
@@ -65,7 +91,7 @@ Future<Post> post;
           title: Text('Fetch Data Example'),
         ),
         body: Center(
-          child: FutureBuilder<Post>(
+          child: FutureBuilder(
             future: post,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
