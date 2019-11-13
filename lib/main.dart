@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 Future fetch() async {
-   print("out1");
+   //print("out1");
   final  response =
       //await http.get('https://jsonplaceholder.typicode.com/posts/1');
       await http.get("https://stocks.finance.yahoo.co.jp/stocks/detail/?code=6758.T");
@@ -31,24 +31,28 @@ Future fetch() async {
       //  print(m.group(0));
       //}
 
-      RegExp regExp = RegExp(r'"stoksPrice">.{1,10}');//new RegExp(r"/[0-9]+/");
+      RegExp regExp = RegExp(r'[0-9]{1,},[0-9]{1,}');//new RegExp(r"/[0-9]+/");
       //var regExp = 'stoksPrice">.{1,10}';
       //String s = "http://example.com?id=some.thing.com&other=parameter; http://example.com?id=some1.thing.com";
       //Iterable<Match> matches = regExp.allMatches(json);
-      print("stringMatch : "+regExp.stringMatch(json).toString());
-       print("allMatches : "+regExp.allMatches(json).toString());
-      print("firstMatch : "+regExp.firstMatch(json).toString());
-      print("hasMatch : "+regExp.hasMatch(json).toString());
+      //print("stringMatch : "+regExp.stringMatch(json).toString());
+      String price = regExp.stringMatch(json).toString();
+      print("StockPrice : "+price);
+      //print("allMatches : "+regExp.allMatches(json).toString());
+      //print("firstMatch : "+regExp.firstMatch(json).toString());
+      //print("hasMatch : "+regExp.hasMatch(json).toString());
       //for (Match match in matches) {
       //  print(match.group(1));
       //}
 
 
       regExp = RegExp(r'[+-][0-9]{1,}.[+-]..[0-9]{1,}%.');//new RegExp(r"/[0-9]+/");
-      print("stringMatch : "+regExp.stringMatch(json).toString());
-      print("allMatches : "+regExp.allMatches(json).toString());
-      print("firstMatch : "+regExp.firstMatch(json).toString());
-      print("hasMatch : "+regExp.hasMatch(json).toString());
+      //print("stringMatch : "+regExp.stringMatch(json).toString());
+      String change = regExp.stringMatch(json).toString();
+      print("Change : "+change);     
+     // print("allMatches : "+regExp.allMatches(json).toString());
+     // print("firstMatch : "+regExp.firstMatch(json).toString());
+     // print("hasMatch : "+regExp.hasMatch(json).toString());
 
 /*
       RegExp regExp1 = new RegExp(r"^WS{1,2}:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:56789",caseSensitive: false,multiLine: false,);
@@ -95,7 +99,7 @@ Future post;
   void initState() {
     super.initState();
     post = fetch();
-    print("out");
+    //print("out");
   }
 
   @override
