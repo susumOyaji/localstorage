@@ -31,13 +31,32 @@ Future fetch() async {
       //  print(m.group(0));
       //}
 
-      RegExp regExp = new RegExp(r'/stoksPrice/\w+');
+      RegExp regExp = RegExp(r'"stoksPrice">.{1,10}');//new RegExp(r"/[0-9]+/");
+      //var regExp = 'stoksPrice">.{1,10}';
       //String s = "http://example.com?id=some.thing.com&other=parameter; http://example.com?id=some1.thing.com";
-      Iterable<Match> matches = regExp.allMatches(json);
-      for (Match match in matches) {
-        print(match.group(1));
-      }
+      //Iterable<Match> matches = regExp.allMatches(json);
+      print("stringMatch : "+regExp.stringMatch(json).toString());
+       print("allMatches : "+regExp.allMatches(json).toString());
+      print("firstMatch : "+regExp.firstMatch(json).toString());
+      print("hasMatch : "+regExp.hasMatch(json).toString());
+      //for (Match match in matches) {
+      //  print(match.group(1));
+      //}
 
+
+      regExp = RegExp(r'[+-][0-9]{1,}.[+-]..[0-9]{1,}%.');//new RegExp(r"/[0-9]+/");
+      print("stringMatch : "+regExp.stringMatch(json).toString());
+      print("allMatches : "+regExp.allMatches(json).toString());
+      print("firstMatch : "+regExp.firstMatch(json).toString());
+      print("hasMatch : "+regExp.hasMatch(json).toString());
+
+/*
+      RegExp regExp1 = new RegExp(r"^WS{1,2}:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:56789",caseSensitive: false,multiLine: false,);
+      print("allMatches : "+regExp1.allMatches("WS://127.0.0.1:56789").toString());
+      print("firstMatch : "+regExp1.firstMatch("WS://127.0.0.1:56789").toString());
+      print("hasMatch : "+regExp1.hasMatch("WS://127.0.0.1:56789").toString());
+      print("stringMatch : "+regExp1.stringMatch("WS://127.0.0.1:56789").toString());
+*/
 
   /*    
   if (response.statusCode == 200) {
