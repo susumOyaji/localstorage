@@ -5,10 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 Future fetch() async {
-   //print("out1");
   final  response =
-      //await http.get('https://jsonplaceholder.typicode.com/posts/1');
-      await http.get("https://stocks.finance.yahoo.co.jp/stocks/detail/?code=6758.T");
+      await http.get("https://stocks.finance.yahoo.co.jp/stocks/detail/?code=6976.T");//^DJI
       final String json = response.body;
 
 
@@ -32,15 +30,21 @@ Future fetch() async {
       //}
 
       RegExp regExp = RegExp(r'[0-9]{1,},[0-9]{1,}');//new RegExp(r"/[0-9]+/");
-      //var regExp = 'stoksPrice">.{1,10}';
-      //String s = "http://example.com?id=some.thing.com&other=parameter; http://example.com?id=some1.thing.com";
-      //Iterable<Match> matches = regExp.allMatches(json);
-      //print("stringMatch : "+regExp.stringMatch(json).toString());
       String price = regExp.stringMatch(json).toString();
       print("StockPrice : "+price);
+      
+      var intprice;
+      try {
+            intprice = int.parse(price.replaceAll(",", "")); 
+      } catch (exception) {
+            intprice = 0.0;
+      }
+      
+      print("string to int : "+intprice.toString());
+        
       //print("allMatches : "+regExp.allMatches(json).toString());
       //print("firstMatch : "+regExp.firstMatch(json).toString());
-      //print("hasMatch : "+regExp.hasMatch(json).toString());
+      print("hasMatch : "+regExp.hasMatch(json).toString());
       //for (Match match in matches) {
       //  print(match.group(1));
       //}
@@ -49,10 +53,29 @@ Future fetch() async {
       regExp = RegExp(r'[+-][0-9]{1,}.[+-]..[0-9]{1,}%.');//new RegExp(r"/[0-9]+/");
       //print("stringMatch : "+regExp.stringMatch(json).toString());
       String change = regExp.stringMatch(json).toString();
-      print("Change : "+change);     
+      print("Change : "+change);
+        
      // print("allMatches : "+regExp.allMatches(json).toString());
      // print("firstMatch : "+regExp.firstMatch(json).toString());
-     // print("hasMatch : "+regExp.hasMatch(json).toString());
+      print("hasMatch : "+regExp.hasMatch(json).toString());
+
+      regExp = RegExp(r'icoUpGreen');//new RegExp(r"/[0-9]+/");
+      //print("stringMatch : "+regExp.stringMatch(json).toString());
+      String signal = regExp.stringMatch(json).toString();
+      print("Signal : "+signal);
+        
+     // print("allMatches : "+regExp.allMatches(json).toString());
+     // print("firstMatch : "+regExp.firstMatch(json).toString());
+      print("hasMatch : "+regExp.hasMatch(json).toString());
+      if ((regExp.hasMatch(json)) == false){
+          print("Green-Down");//Down
+      }else{
+          print("Red-Up");//Up
+      }
+
+
+   
+
 
 /*
       RegExp regExp1 = new RegExp(r"^WS{1,2}:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:56789",caseSensitive: false,multiLine: false,);
@@ -72,11 +95,51 @@ Future fetch() async {
   }
   */
 //////////////////////////////
- 
-
-
-
 }
+
+
+GridView gridView1() => new GridView.builder(
+  //itemCount: widgets.length,//<-- setState()
+  //itemCount: 3,
+  gridDelegate:new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1),
+  itemBuilder: (BuildContext context, int index) {
+    return new GestureDetector(
+      child: new Card(
+        color: Colors.grey[850],
+        elevation: 5.0,
+        child: new Container(
+          //color: Colors.black38,
+          //padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+          //alignment: Alignment.center,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new Text("({widgets[index].code}) "+"{widgets[index].name}",
+                  style: TextStyle(fontSize: 9.0, color: Colors.white),),
+              new Text("現在値 {separate(widgets[index].realValue.toString())}",
+                  style: TextStyle(fontSize: 10.0, color: Colors.white),),
+              new Text("利益　{separate(widgets[index].gain.toString())}",
+                  style: TextStyle(fontSize: 10.0, fontFamily: 'Roboto',color: Colors.yellow),),
+              Chip(
+                avatar: CircleAvatar(
+                  backgroundColor: Colors.grey.shade800,
+                  child: Text('AB'),
+                ),
+                label: Text('Aaron Burr'),
+              )
+    
+            ],
+              
+          ),
+                //alignment: Alignment.center,
+                //child: new Text("${widgets[index].code}",style: TextStyle(fontSize: 10.0, color: Colors.white),),//new Text('Item $index'),
+        ),
+                //alignment: Alignment.center,
+                //child: new Text('Item $index'),
+      ),
+    );
+  });
 
 
 
@@ -105,30 +168,45 @@ Future post;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Fetch Data Example',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Scaffold(
-        appBar: AppBar(
+        home: Scaffold(
+          appBar: AppBar(
           title: Text('Fetch Data Example'),
         ),
-        body: Center(
-          child: FutureBuilder(
-            future: post,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text(snapshot.data.title);
-              } else if (snapshot.hasError) {
-                return Text("${snapshot.error}");
-              }
-
-              // By default, show a loading spinner.
-              return CircularProgressIndicator();
-            },
+        body: GridView.count(
+        crossAxisCount: 2,
+        children: <Widget>[
+          Container(
+            color: Colors.yellowAccent,
+            height: double.infinity, // tambahkan property berikut
+            child: Center(
+              child: Text("1", style: TextStyle(fontSize: 24.0),),
+            ),
           ),
-        ),
+          Container(
+            color: Colors.blueAccent,
+            height: double.infinity, // tambahkan property berikut
+            child: Center(
+              child: Text("2", style: TextStyle(fontSize: 24.0),),
+            ),
+          ),
+          Container(
+            color: Colors.brown,
+            height: double.infinity, // tambahkan property berikut
+            child: Center(
+              child: Text("3", style: TextStyle(fontSize: 24.0),),
+            ),
+          ),
+          Container(
+            color: Colors.orange,
+            height: double.infinity, // tambahkan property berikut
+            child: Center(
+              child: Text("4", style: TextStyle(fontSize: 24.0),),
+            ),
+          ),
+        ],
       ),
-    );
+    ),
+    );   
+    
   }
 }
