@@ -157,6 +157,9 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 Future post;
+ var _chipList = List<Chip>();
+ var _keyNumber = 0;
+
 
   @override
   void initState() {
@@ -165,6 +168,28 @@ Future post;
     //print("out");
   }
 
+
+void _addChip(String text) {
+    var chipKey = Key('chip_key_$_keyNumber');
+    _keyNumber++;
+
+    _chipList.add(
+      Chip(
+        key: chipKey,
+        label: Text(text),
+        onDeleted: () => _deleteChip(chipKey),
+      ),
+    );
+  }
+
+  void _deleteChip(Key chipKey) {
+    setState(() => _chipList.removeWhere((Widget w) => w.key == chipKey));
+  }
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -172,7 +197,7 @@ Future post;
           appBar: AppBar(
           title: Text('Fetch Data Example'),
         ),
-        body: GridView.count(
+        body:GridView.count(
         crossAxisCount: 2,
         children: <Widget>[
           Container(
@@ -200,11 +225,24 @@ Future post;
             color: Colors.orange,
             height: double.infinity, // tambahkan property berikut
             child: Center(
-              child: Text("4", style: TextStyle(fontSize: 24.0),),
+              child:Row(children: <Widget>[
+                Expanded(
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    spacing: 8.0,
+                    runSpacing: 0.0,
+                    direction: Axis.horizontal,
+                    children: _chipList,
+                  ),
+                ),
+                Text("4", style: TextStyle(fontSize: 24.0),),
+            ],)
             ),
           ),
+          _addChip(text),
         ],
       ),
+      
     ),
     );   
     
