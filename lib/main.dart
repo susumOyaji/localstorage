@@ -4,6 +4,98 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+
+
+GridView gridView1() => new GridView.builder(
+  //itemCount: widgets.length,//<-- setState()
+  //itemCount: 3,
+  gridDelegate:new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1),
+  itemBuilder: (BuildContext context, int index) {
+    return new GestureDetector(
+      child: new Card(
+        color: Colors.grey[850],
+        elevation: 5.0,
+        child: new Container(
+          //color: Colors.black38,
+          //padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+          //alignment: Alignment.center,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new Text("({widgets[index].code}) "+"{widgets[index].name}",
+                  style: TextStyle(fontSize: 9.0, color: Colors.white),),
+              new Text("現在値 {separate(widgets[index].realValue.toString())}",
+                  style: TextStyle(fontSize: 10.0, color: Colors.white),),
+              new Text("利益　{separate(widgets[index].gain.toString())}",
+                  style: TextStyle(fontSize: 10.0, fontFamily: 'Roboto',color: Colors.yellow),),
+              Chip(
+                avatar: CircleAvatar(
+                  backgroundColor: Colors.grey.shade800,
+                  child: Text('AB'),
+                ),
+                label: Text('Aaron Burr'),
+              )
+    
+            ],
+              
+          ),
+                //alignment: Alignment.center,
+                //child: new Text("${widgets[index].code}",style: TextStyle(fontSize: 10.0, color: Colors.white),),//new Text('Item $index'),
+        ),
+                //alignment: Alignment.center,
+                //child: new Text('Item $index'),
+      ),
+    );
+  });
+
+
+
+
+
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatefulWidget {
+  MyApp({Key key}) : super(key: key);
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+Future post;
+ var _chipList = List<Chip>();
+ var _keyNumber = 0;
+ String price;
+
+  @override
+  void initState() {
+    super.initState();
+    post = fetch();
+    _addChip("price");
+        //print("out");
+  }
+
+
+void _addChip(String text) {
+    var chipKey = Key('chip_key_$_keyNumber');
+    _keyNumber++;
+
+    _chipList.add(
+      Chip(
+        key: chipKey,
+        label: Text(text),
+        onDeleted: () => _deleteChip(chipKey),
+      ),
+    );
+  }
+
+  void _deleteChip(Key chipKey) {
+    setState(() => _chipList.removeWhere((Widget w) => w.key == chipKey));
+  }
+
+
 Future fetch() async {
   final  response =
       await http.get("https://stocks.finance.yahoo.co.jp/stocks/detail/?code=6976.T");//^DJI
@@ -30,7 +122,7 @@ Future fetch() async {
       //}
 
       RegExp regExp = RegExp(r'[0-9]{1,},[0-9]{1,}');//new RegExp(r"/[0-9]+/");
-      String price = regExp.stringMatch(json).toString();
+      price = regExp.stringMatch(json).toString();
       print("StockPrice : "+price);
       
       var intprice;
@@ -98,93 +190,7 @@ Future fetch() async {
 }
 
 
-GridView gridView1() => new GridView.builder(
-  //itemCount: widgets.length,//<-- setState()
-  //itemCount: 3,
-  gridDelegate:new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1),
-  itemBuilder: (BuildContext context, int index) {
-    return new GestureDetector(
-      child: new Card(
-        color: Colors.grey[850],
-        elevation: 5.0,
-        child: new Container(
-          //color: Colors.black38,
-          //padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-          //alignment: Alignment.center,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              new Text("({widgets[index].code}) "+"{widgets[index].name}",
-                  style: TextStyle(fontSize: 9.0, color: Colors.white),),
-              new Text("現在値 {separate(widgets[index].realValue.toString())}",
-                  style: TextStyle(fontSize: 10.0, color: Colors.white),),
-              new Text("利益　{separate(widgets[index].gain.toString())}",
-                  style: TextStyle(fontSize: 10.0, fontFamily: 'Roboto',color: Colors.yellow),),
-              Chip(
-                avatar: CircleAvatar(
-                  backgroundColor: Colors.grey.shade800,
-                  child: Text('AB'),
-                ),
-                label: Text('Aaron Burr'),
-              )
-    
-            ],
-              
-          ),
-                //alignment: Alignment.center,
-                //child: new Text("${widgets[index].code}",style: TextStyle(fontSize: 10.0, color: Colors.white),),//new Text('Item $index'),
-        ),
-                //alignment: Alignment.center,
-                //child: new Text('Item $index'),
-      ),
-    );
-  });
 
-
-
-
-
-
-void main() => runApp(MyApp());
-
-class MyApp extends StatefulWidget {
-  MyApp({Key key}) : super(key: key);
-
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-Future post;
- var _chipList = List<Chip>();
- var _keyNumber = 0;
-
-
-  @override
-  void initState() {
-    super.initState();
-    post = fetch();
-    //print("out");
-  }
-
-
-void _addChip(String text) {
-    var chipKey = Key('chip_key_$_keyNumber');
-    _keyNumber++;
-
-    _chipList.add(
-      Chip(
-        key: chipKey,
-        label: Text(text),
-        onDeleted: () => _deleteChip(chipKey),
-      ),
-    );
-  }
-
-  void _deleteChip(Key chipKey) {
-    setState(() => _chipList.removeWhere((Widget w) => w.key == chipKey));
-  }
 
 
 
@@ -235,11 +241,11 @@ void _addChip(String text) {
                     children: _chipList,
                   ),
                 ),
-                Text("4", style: TextStyle(fontSize: 24.0),),
+                //_addChip("test"),// Text("4", style: TextStyle(fontSize: 24.0),),
             ],)
             ),
           ),
-          _addChip(text),
+          
         ],
       ),
       
