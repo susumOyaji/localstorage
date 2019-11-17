@@ -2,13 +2,24 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 
 
 
-void main() => runApp(MyApp());
+void main() {
+  debugPaintSizeEnabled = true;
+  runApp(
+    MaterialApp(
+      home: MyApp(),
+    ),
+  );
+}
+
+//void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
   MyApp({Key key}) : super(key: key);
@@ -18,29 +29,33 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-int _counter = 0;
-String load;
-Future post;
- var _chipList = List<Chip>();
- var _keyNumber = 0;
- String price ="";
+  int _counter = 0;
+  String load;
+  Future post;
+  var _chipListfast = List<Chip>();
+  var _chipList = List<Chip>();
+  var _keyNumber = 0;
+  String price ="";
 
   @override
   void initState() {
     super.initState();
     //post = fetch(price);
-    _saveString("1000","SONY");//save
-    _loadString("1000");//load
+    _saveString("6758","SONY");//save
+    _loadString("6758");//load
     
     
 
-    _addChip("Nikkei 23300");
-    loadData();
-     _addChip("Newyork 27000");
+    _addChipfast("Nikkei 23300");
+    _addChipfast("Newyork 27000");
+    _addChipfast("Profit 150,000  350,000");
+    
+    
     _addChip("Taiyo");
-    //_addChip(load);
     _addChip("3");
     _addChip("4");
+    _addChip("5");
+    _addChip("6");
         //print("out");
   }
 
@@ -88,21 +103,43 @@ Future post;
 
 
 
+void _addChipfast(String text) {
+    var chipKey = Key('chip_key_$_keyNumber');
+    _keyNumber++;
+    
+    
+    _chipListfast.add(
+      Chip(
+        key: chipKey,
+        backgroundColor:  Colors.orange,
+        elevation: 4,
+        shadowColor: Colors.white,
+        padding: EdgeInsets.all(4),
+        avatar: CircleAvatar(
+          backgroundColor: Colors.green,//.grey.shade800,
+          child: Text(_keyNumber.toString()),
+        ),
+        label: Text(text,style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        //onDeleted: () => _deleteChip(chipKey),
+      ),
+    );
+   }
 
 
 void _addChip(String text) {
     var chipKey = Key('chip_key_$_keyNumber');
     _keyNumber++;
+      
     
     _chipList.add(
       Chip(
         key: chipKey,
-        backgroundColor:  Colors.grey,
+        backgroundColor:  Colors.blueAccent,
         elevation: 4,
-        shadowColor: Colors.orange,
+        shadowColor: Colors.white,
         padding: EdgeInsets.all(4),
         avatar: CircleAvatar(
-          backgroundColor: Colors.green,//.grey.shade800,
+          backgroundColor: Colors.red,//.grey.shade800,
           child: Text(_keyNumber.toString()),
         ),
         label: Text(text,style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
@@ -128,7 +165,7 @@ loadData() async {
     for(String price in prices) {
       
       //fetch(price);
-      _addChip("SONY"+" 1,234");
+     // _addChip("SONY"+" 1,234");
     }
 }
 
@@ -139,15 +176,14 @@ static List<Price> parse(var responce)
               
               for( String row in list ) {
                 if (row.isNotEmpty){
-                    //continue;
                   var lista = row.split(",");  
-                  //Price p = new Price(lista[0],lista[1],lista[2],lista[3],lista[4],lista[5],list[6]);
+                  
                   Price p = new Price();
                   p.code = lista[0];//企業コード
-                  p.stocks = (lista[1]);//保有数
-                  p.itemprice = (lista[2]);//購入単価
+                  p.stocks = lista[1];//保有数
+                  p.itemprice = lista[2];//購入単価
+                  
                   prices.add(p);
-
                   print('Finance=${list.indexOf(row)}: $row');
                 }
               }                   
@@ -254,13 +290,144 @@ Future fetch(price) async {
 
 }
 
+  Widget _titleArea() {    
+      return Container(
+              color: Colors.black,
+              child: Row(
+                //mainAxisAlignment: MainAxisAlignment.center,
+                //crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                Expanded(
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 8.0,
+                    runSpacing: 0.0,
+                    direction: Axis.horizontal,
+                    children: _chipListfast,
+                  ),
+                ),
+                ],
+              ),
+      ); 
+  }
+
+
+Widget _titleArealg(){
+        return Container(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Expanded(
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    spacing: 10.0,
+                    runSpacing: 0.0,
+                    direction: Axis.horizontal,
+                    children: _chipList,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      
+    );
+              
+  
+}
+      
+  
 
 
 
+Widget _titleArea1() {
+  return Container(
+    margin: EdgeInsets.all(16.0),
+    child: Row(    // 1行目
+      children: <Widget>[
+        Expanded(  // 2.1列目
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(  // 3.1.1行目
+                margin: const EdgeInsets.only(bottom: 4.0),
+                child: Text(
+                  "Neko is So cute.",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16.0),
+                ),
+              ),
+              Container(  // 3.1.2行目
+                child: Text(
+                  "Osaka, Japan",
+                  style: TextStyle(fontSize: 12.0, color: Colors.grey),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Icon(  // 2.2列目
+          Icons.star,
+          color: Colors.red,
+        ),
+        Text('41'),  // 2.3列目
+      ],
+    )
+  );
+}
 
 
+Widget _buttonArea() {
+  return Container(
+      margin: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
+      child: Row( // 1行目
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          _buildButtonColumn(Icons.call, "CALL"), // 2.1
+          _buildButtonColumn(Icons.near_me, "ROUTE"), // 2.2
+          _buildButtonColumn(Icons.share, "SHARE") // 2.3
+        ],
+      ));
+}
+ 
+Widget _buildButtonColumn(IconData icon, String label) {
+  final color = Theme.of(context).primaryColor;
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: <Widget>[
+      Icon(icon, color: color), // 3.1.1
+      Container( // 3.1.2
+        margin: const EdgeInsets.only(top: 8.0),
+        child: Text(
+          label,
+          style: TextStyle(
+              fontSize: 12.0,
+              fontWeight: FontWeight.w400,
+              color: color),
+        ),
+      )
+    ],
+  );
+}
 
-
+Widget _descriptionArea() {
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
+        child: Text('''
+The Neko is very cute. The Neko is super cute. Neko has been sleeping during the day time. She gets up in the evening. she is playing around at night. She nestles up to me when I get a snack. She gets angly when I pick herup. She cries out like end of the world when I take her to the bathroom. When I am asleep she goes on. Therefore, sometimes, I can be apologized.
+          '''),
+      ),
+    );
+  }
 
 
 
@@ -272,67 +439,21 @@ Future fetch(price) async {
           appBar: AppBar(
           title: Text('Fetch Data Example'),
         ),
-        body:GridView.count(
-        crossAxisCount: 1,
-        children: <Widget>[
-          Container(
-            color: Colors.black,
-            height: double.infinity, // tambahkan property berikut
-            child: Center(
-              child:Column(children: <Widget>[
-                Expanded(
-                  child: Wrap(
-                    alignment: WrapAlignment.start,
-                    spacing: 10.0,// gap between adjacent chips
-                    runSpacing: 0.0,// gap between lines
-                    direction: Axis.horizontal,
-                    children: _chipList,
-                  ),
-                ), 
-               ],
-               )
-            ),
-          
-          ),    
-          Container(
-            color: Colors.green[100],
-            height: double.infinity, // tambahkan property berikut
-            child: Center(
-              child:Column(children: <Widget>[
-                Expanded(
-                  child: Wrap(
-                    alignment: WrapAlignment.start,
-                    spacing: 10.0,// gap between adjacent chips
-                    runSpacing: 0.0,// gap between lines
-                    direction: Axis.horizontal,
-                    children: _chipList,
-                  ),
-                ),
-               
-                
-              Wrap(
-                spacing: 8.0, // gap between adjacent chips
-                runSpacing: 4.0, // gap between lines
-                children: <Widget>[
-                  Chip(
-                  avatar: CircleAvatar(backgroundColor: Colors.blue.shade900, child: Text('AH')),
-                  label: Text(load),
-                ),
-   
-  ],
-)
-                // Text("4", style: TextStyle(fontSize: 24.0),),
-            ],)
-            ),
-          ),
-         
-        ],
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () => setState(() => _addChip("Add")),
+        ),
+        body:Column(
+          children: <Widget>[
+            _titleArea(),
+            _titleArealg(),
+            //_titleArea1(),
+            //_buttonArea(),
+            //_descriptionArea(),
+          ],
+        ),
       ),
-     
-    ),
-    );   
-    
- 
+    );
   }
 }
 
