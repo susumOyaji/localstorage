@@ -313,31 +313,10 @@ Future fetch(price) async {
 
 
 Widget _titleArealg(){
-        return Container(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  child: Wrap(
-                    alignment: WrapAlignment.start,
-                    spacing: 10.0,
-                    runSpacing: 0.0,
-                    direction: Axis.horizontal,
-                    children: _chipList,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      
-    );
+        return GridView.count(
+                crossAxisCount: 5,
+                children: _chipList,
+            );
               
   
 }
@@ -445,7 +424,9 @@ The Neko is very cute. The Neko is super cute. Neko has been sleeping during the
         ),
         body:Column(
           children: <Widget>[
-            _titleArea(),
+            
+            //_titleArea(),
+            
             _titleArealg(),
             //_titleArea1(),
             //_buttonArea(),
