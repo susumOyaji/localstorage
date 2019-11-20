@@ -6,12 +6,12 @@ import 'package:flutter/rendering.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'dart:html';
 
 
 
 void main() {
-  debugPaintSizeEnabled = true;
+  debugPaintSizeEnabled = false;
   runApp(
     MaterialApp(
       home: MyApp(),
@@ -36,27 +36,111 @@ class _MyAppState extends State<MyApp> {
   var _chipList = List<Chip>();
   var _keyNumber = 0;
   String price ="";
+  String codename;//="Null to String";
+  //String codename="";
+  
+
+ var _localStorage = window.localStorage;
+Window windowLoc;
+
+ 
+
+
+
+//assert(window.localStorage.containsValue('does not exist') == false);
+//_localStorage.clear();
+//assert(window.localStorage.length == 0);
+
+
+
+// localStorageに保存されている、あるkeyの値を削除する
+removeItem(key) {
+    window.localStorage.remove(key);
+}
+
+// localStorageに保存されているすべての値を削除する
+clear() {
+    window.localStorage.clear();
+}
+
+
+  
+
 
   @override
   void initState() {
     super.initState();
     //post = fetch(price);
-    _saveString("6758","SONY");//save
+    webKeyFinder();
+
+    _saveString("6758","SONY");//save to name,price,stock 
+    keysave("6758","200");
+
     _loadString("6758");//load
-    
+    load = keyload("6758");
+    //String stockandcost = "1000-1850";
+    //_saveString(codename.toString(),stockandcost);
+    //_loadString("SONY");//load
     
 
     _addChipfast("Nikkei 23300");
     _addChipfast("Newyork 27000");
     _addChipfast("Profit 150,000  350,000");
     
-    
-    _addChip("Taiyo");
-    _addChip("3");
+    //String ret = codename;
+    //_addChip(sample.toString() ?? "non load data");
+    _addChip(load ?? "NonData");
     _addChip("4");
     _addChip("5");
     _addChip("6");
-        //print("out");
+    print(load ?? "non loadData");
+    load = keyload("Mykey");
+    print(load ?? "non MykeyloadData");
+  }
+
+
+   webKeyFinder() {
+    windowLoc = window;
+    print("Widnow is initialized");
+    // storing something initially just to make sure it works. :)
+    windowLoc.localStorage["MyKey"] = "I am from web local storage";
+  }
+
+ Future keysave(String key,String value) async {
+    _localStorage[key] = value;//key="code",value="stock"
+    //Future<String> ret = fetch(key);
+
+    //_addChip(ret.toString());
+  }
+
+  //Future<String> getId(String key) async => _localStorage[key];
+  String keyload(String key) {
+    return _localStorage[key];
+  }
+
+  Future keyinvalid(String key) async {
+    _localStorage.remove(key);
+  }
+ 
+  
+
+  //Incrementing counter after click
+  void _saveString(String keyword,String keydata) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+        prefs.setString(keyword, keydata);//save
+        _incrementCounter();//save to countUp
+    });
+  }
+
+  //Loading counter value on start
+  void _loadString( String keyword) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      load = prefs.getString(keyword);//load
+      print(load);
+      
+    });
   }
 
   //Incrementing counter after click
@@ -77,24 +161,9 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  //Loading counter value on start
-  void _loadString( String keyword) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      load = prefs.getString(keyword) ?? "null";//load
-      print(load);
-    });
-  }
+  
 
-  //Incrementing counter after click
-  void _saveString(String keyword,String keydata) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-        prefs.setString(keyword, keydata);//save
-        _incrementCounter();//save to countUp
-    });
-  }
-
+  
   _deleteCounter(String keyword) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove(keyword);
@@ -113,7 +182,7 @@ void _addChipfast(String text) {
         key: chipKey,
         backgroundColor:  Colors.orange,
         elevation: 4,
-        shadowColor: Colors.white,
+        //shadowColor: Colors.white,
         padding: EdgeInsets.all(4),
         avatar: CircleAvatar(
           backgroundColor: Colors.green,//.grey.shade800,
@@ -134,7 +203,7 @@ void _addChip(String text) {
     _chipList.add(
       Chip(
         key: chipKey,
-        backgroundColor:  Colors.blueAccent,
+        backgroundColor:  Color(0XFF12445D),
         elevation: 4,
         shadowColor: Colors.white,
         padding: EdgeInsets.all(4),
@@ -142,7 +211,7 @@ void _addChip(String text) {
           backgroundColor: Colors.red,//.grey.shade800,
           child: Text(_keyNumber.toString()),
         ),
-        label: Text(text,style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        label: Text(text,style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         onDeleted: () => _deleteChip(chipKey),
       ),
     );
@@ -157,7 +226,7 @@ void _addChip(String text) {
     setState(() => _chipList.removeWhere((Widget w) => w.key == chipKey));
   }
 
-loadData() async {
+  loadData() async {
     String responce ="6758,200,1665\n9837,200,712\n6976,200,1746\n6753,0,0\n";
     List prices = json.decode(responce);
     _incrementCounter();
@@ -167,28 +236,31 @@ loadData() async {
       //fetch(price);
      // _addChip("SONY"+" 1,234");
     }
-}
+  }
 
-static List<Price> parse(var responce)
-        {
-            List<Price> prices = new List<Price>(); //ｺﾝｽﾄﾗｸﾀ
-            var list = responce.split("\n"); 
+  static List<Price> parse(var responce)
+  {
+    List<Price> prices = new List<Price>(); //ｺﾝｽﾄﾗｸﾀ
+    var list = responce.split("\n"); 
               
-              for( String row in list ) {
-                if (row.isNotEmpty){
-                  var lista = row.split(",");  
+    for( String row in list ) {
+      if (row.isNotEmpty){
+        var lista = row.split(",");  
                   
-                  Price p = new Price();
-                  p.code = lista[0];//企業コード
-                  p.stocks = lista[1];//保有数
-                  p.itemprice = lista[2];//購入単価
+        Price p = new Price();
+        p.code = lista[0];//企業コード
+        p.stocks = lista[1];//保有数
+        p.itemprice = lista[2];//購入単価
                   
-                  prices.add(p);
-                  print('Finance=${list.indexOf(row)}: $row');
-                }
-              }                   
-           return prices;
-        }
+        prices.add(p);
+        print('Finance=${list.indexOf(row)}: $row');
+      }
+    }                   
+    return prices;
+  }
+
+
+
 
 
 
@@ -292,7 +364,7 @@ Future fetch(price) async {
 
   Widget _titleArea() {    
       return Container(
-              color: Colors.black,
+              color: Color(0xFF0B4050),
               child: Row(
                 //mainAxisAlignment: MainAxisAlignment.center,
                 //crossAxisAlignment: CrossAxisAlignment.center,
@@ -312,22 +384,14 @@ Future fetch(price) async {
   }
 
 
-Widget _titleArealg(){
-        return GridView.count(
-                crossAxisCount: 5,
-                children: _chipList,
-            );
-              
-  
-}
-      
-  
+bool _active = false;
 
-
+void _changeSwitch(bool e) => setState(() => _active = e);
 
 Widget _titleArea1() {
   return Container(
-    margin: EdgeInsets.all(16.0),
+    color: Color(0xFF0B4050),
+    //margin: EdgeInsets.all(10.0),
     child: Row(    // 1行目
       children: <Widget>[
         Expanded(  // 2.1列目
@@ -337,7 +401,7 @@ Widget _titleArea1() {
               Container(  // 3.1.1行目
                 margin: const EdgeInsets.only(bottom: 4.0),
                 child: Text(
-                  "Neko is So cute.",
+                  "Reload",
                   style: TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 16.0),
                 ),
@@ -355,18 +419,42 @@ Widget _titleArea1() {
           Icons.star,
           color: Colors.red,
         ),
-        Text('41'),  // 2.3列目
+        //Text('41'),
+        Switch(
+            value: _active,
+            activeColor: Colors.orange,
+            activeTrackColor: Colors.red,
+            inactiveThumbColor: Colors.blue,
+            inactiveTrackColor: Colors.green,
+            onChanged: _changeSwitch,
+          ) // 2.3列目
       ],
     )
   );
 }
 
 
+Widget _titleArealg(){
+        return SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          
+         child: Wrap(
+                    alignment: WrapAlignment.start,
+                    spacing: 8.0,
+                    runSpacing: 0.0,
+                    direction: Axis.horizontal,
+                    children: _chipList,
+                  ),
+        );
+}
+
+
 Widget _buttonArea() {
   return Container(
+      color: Colors.black,
       margin: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
       child: Row( // 1行目
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           _buildButtonColumn(Icons.call, "CALL"), // 2.1
@@ -415,27 +503,57 @@ The Neko is very cute. The Neko is super cute. Neko has been sleeping during the
   Widget build(BuildContext context) {
        return MaterialApp(
         home: Scaffold(
-          appBar: AppBar(
-          title: Text('Fetch Data Example'),
-        ),
+          //appBar: AppBar(
+          //title: Text('Fetch Data Example'),
+        //),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: () => setState(() => _addChip("Add")),
         ),
-        body:Column(
-          children: <Widget>[
-            
-            //_titleArea(),
-            
-            _titleArealg(),
-            //_titleArea1(),
-            //_buttonArea(),
-            //_descriptionArea(),
-          ],
+        body:SafeArea(
+              child: Column(
+            //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //mainAxisSize: MainAxisSize.max,
+            //crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                //Expanded(
+               
+                //alignment: Alignment.topCenter,
+                //width: 1.7976931348623157e+308,
+                //height: 100.0,
+                //child:
+                _titleArea(),
+              //),
+              //Expanded(
+                //child:
+                Divider(height: 2.0,color: Colors.purple),
+              //),
+              Container(
+                //color: Colors.black,
+                child:_titleArea1(),
+              ),
+              Expanded(
+                 flex: 6,
+                //alignment: Alignment.center,
+                //height: 600.0,
+                //color: Colors.black,
+                child:
+                _titleArealg(),
+              ),
+              Expanded(
+                //flex: 2,
+                child:
+                _buttonArea(),
+                //alignment: Alignment.bottomCenter,
+              ),
+              //_descriptionArea(),
+            ],
+          ),
         ),
       ),
     );
   }
+
 }
 
 
@@ -464,3 +582,22 @@ class Price
        
          //Price(this.code, this.stocks, this.itemprice,this.name,this.realValue,this.prev_day,this.percent );
     }
+/*
+class WebKeyFinder implements KeyFinder {
+
+  WebKeyFinder() {
+    windowLoc = window;
+    print("Widnow is initialized");
+    // storing something initially just to make sure it works. :)
+    windowLoc.localStorage["MyKey"] = "I am from web local storage";
+  }
+
+  String getKeyValue(String key) {
+    return windowLoc.localStorage[key];
+  }
+
+  void setKeyValue(String key, String value) {
+    windowLoc.localStorage[key] = value;
+  }  
+}
+*/
