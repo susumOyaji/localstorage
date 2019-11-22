@@ -1,0 +1,22 @@
+import 'main.dart';
+
+Window window;
+
+class SharedPreferences {
+  static Future<SharedPreferences> get getInstance async {}
+  setString(String key, String value) {}
+  getString(String key) {}
+}
+
+class Window {
+  Map<String, String> localStorage;
+}
+
+
+Future<String> getString(String key) async {
+    if (kIsWeb) {
+       return window.localStorage[key];
+    }
+    SharedPreferences preferences = await SharedPreferences.getInstance;
+    return preferences.getString(key);
+}
