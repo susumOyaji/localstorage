@@ -1,4 +1,4 @@
-import 'key_finder_interface.dart';
+import 'package:localstorage/key_finder_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefKeyFinder implements KeyFinder {
