@@ -74,8 +74,9 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     _addChipfast("Newyork 27000");
     _addChipfast("Profit 150,000  350,000");
 
-    widget.keyFinder.setKeyValue("6758","SONY");//save to name,price,stock
-    widget.keyFinder.getKeyValue("6758");//load
+    widget.keyFinder.setKeyValue("6758","SONY-1995-200");//save to name,price,stock
+    load = widget.keyFinder.getKeyValue("6758");//load
+    print(load);
     fetch(load,"6758");
     
    
@@ -84,7 +85,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     _addChip("4");
     _addChip("5");
     _addChip("6");
-    print(load);
+   
     
   }
 
@@ -122,8 +123,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
 void _addChipfast(String text) {
     var chipKey = Key('chip_key_$_keyNumber');
     _keyNumber++;
-    
-    
+        
     _chipListfast.add(
       Chip(
         key: chipKey,
@@ -145,8 +145,7 @@ void _addChipfast(String text) {
 void _addChip(String text) {
     var chipKey = Key('chip_key_$_keyNumber');
     _keyNumber++;
-      
-    
+          
     _chipList.add(
       Chip(
         key: chipKey,
@@ -295,13 +294,7 @@ Future fetch(String load, String key) async {
    
 
 
-/*
-      RegExp regExp1 = new RegExp(r"^WS{1,2}:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:56789",caseSensitive: false,multiLine: false,);
-      print("allMatches : "+regExp1.allMatches("WS://127.0.0.1:56789").toString());
-      print("firstMatch : "+regExp1.firstMatch("WS://127.0.0.1:56789").toString());
-      print("hasMatch : "+regExp1.hasMatch("WS://127.0.0.1:56789").toString());
-      print("stringMatch : "+regExp1.stringMatch("WS://127.0.0.1:56789").toString());
-*/
+
 
   /*    
   if (response.statusCode == 200) {

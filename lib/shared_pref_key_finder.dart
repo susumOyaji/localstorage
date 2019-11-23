@@ -20,7 +20,15 @@ class SharedPrefKeyFinder implements KeyFinder {
   void setKeyValue(String key, String value) {
     _instance?.setString(key, value);
   }
+  /*
+  void removeKey(String key){
+    _instance?.remove(key);
+  }
 
+  void clearKey() {
+     _instance?.clear();
+  }
+  */
 }
 
 KeyFinder getKeyFinder() => SharedPrefKeyFinder();
