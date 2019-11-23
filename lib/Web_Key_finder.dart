@@ -1,6 +1,6 @@
 import 'dart:html';
 
-import 'key_finder_interface.dart';
+import 'package:localstorage/key_finder_interface.dart';
 
 Window windowLoc;
 
