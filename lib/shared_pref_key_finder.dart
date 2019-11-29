@@ -1,4 +1,4 @@
-import 'package:localstorage/key_finder_interface.dart';
+import 'key_finder_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefKeyFinder implements KeyFinder {
@@ -17,7 +17,9 @@ class SharedPrefKeyFinder implements KeyFinder {
         'shared preference is not yet initialized';
   }
 
-  void setKeyValue(String key, String value) {
+  void setKeyValue (String key, String value) {
+    //final SharedPreferences prefs = await SharedPreferences.getInstance();
+    //prefs.setInt('counter', 123);
     _instance?.setString(key, value);
   }
   /*

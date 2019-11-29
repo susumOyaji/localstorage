@@ -1,4 +1,4 @@
-import 'package:localstorage/key_finder_stub.dart'
+import 'key_finder_stub.dart'
     // ignore: uri_does_not_exist
     if (dart.library.io) 'shared_pref_key_finder.dart'
     // ignore: uri_does_not_exist
