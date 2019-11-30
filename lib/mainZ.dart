@@ -75,7 +75,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     _addChipfast("Profit 150,000  350,000");
 
     widget.keyFinder.setKeyValue("6758","SONY-1995-200");//save to name,price,stock
-    load = widget.keyFinder.getKeyValue("6758");//load
+    load  = widget.keyFinder.getKeyValue("6758");//load
     print(load);
     //fetch(load,"6758");
     
@@ -157,7 +157,7 @@ void _addChip(String text) {
           backgroundColor: Colors.red,//.grey.shade800,
           child: Text(_keyNumber.toString()),
         ),
-        label: Text(text,style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        label: Text(text.toString(),style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         onDeleted: () => _deleteChip(chipKey),
       ),
     );

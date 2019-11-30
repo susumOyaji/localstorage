@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'key_finder_interface.dart';
 //import 'package:localstorage/main.dart';
 
-void main() => runApp(MyApp());
+//void main() => runApp(MyApp());
+
+void main() {
+  debugPaintSizeEnabled = false;
+  runApp(
+    MaterialApp(
+      home: MyApp(),
+    ),
+  );
+}
+
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.

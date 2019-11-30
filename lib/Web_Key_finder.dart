@@ -13,7 +13,7 @@ class WebKeyFinder implements KeyFinder {
     windowLoc.localStorage["MyKey"] = "I am from web local storage";
   }
 
-  String getKeyValue(String key) {
+  String getKeyValue(String key){
     return windowLoc.localStorage[key];
   }
 
