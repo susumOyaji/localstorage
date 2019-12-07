@@ -71,9 +71,7 @@ final TextEditingController valueCtrl = TextEditingController();
 
 void _init() async {
     await SharePrefs.setInstance();
-    //listItems = SharePrefs.getListItems();
-    //completedItems = SharePrefs.getCompletedItems();
-    
+        
     codeItems = SharePrefs.getCodeItems();
     stockItems = SharePrefs.getStockItems();
     valueItems = SharePrefs.getValueItems();
@@ -89,6 +87,9 @@ void _init() async {
     _init();
     super.initState();
 
+
+    loadData();
+    print(codeItems);
     _addChipfast("1234");
     _addChipfast("5678");
     _addChipfast("9012");
@@ -196,13 +197,13 @@ void _addChip(String text) {
 
 
   loadData() async {
-    String responce ="6758,200,1665\n9837,200,712\n6976,200,1746\n6753,0,0\n";
-    List prices = json.decode(responce);
+    //String responce ="6758,200,1665\n9837,200,712\n6976,200,1746\n6753,0,0\n";
+    List<String> codes = codeItems;
     //_incrementCounter();
 
-    for(String price in prices) {
+    for(String code in codes) {
       
-      //fetch(price);
+      fetch(code);
      // _addChip("SONY"+" 1,234");
     }
   }
@@ -235,7 +236,7 @@ void _addChip(String text) {
 
 
 
-Future fetch(String load, String key) async {
+Future fetch(String load) async {
   String ret;
 
   final  response =
@@ -310,24 +311,11 @@ Future fetch(String load, String key) async {
       }else{
           print("Red-Up");//Up
       }
-
-
-   
-
-
-
-
-  /*    
-  if (response.statusCode == 200) {
-    // If the call to the server was successful, parse the JSON.
-    return Post.fromJson(json.decode(response.body));
-  } else {
-    // If that call was not successful, throw an error.
-    throw Exception('Failed to load post');
-  }
-  */
-
 }
+
+
+
+
 
   Widget _titleArea() {    
       return Container(
@@ -502,18 +490,7 @@ Widget _titleArea1() {
                                 setState(() {});
                               });
 
-                             /*
-                              SharePrefs.setCodeItems(codeItems).then((_) {
-                                setState(() {});
-                              });
-                              SharePrefs.setStockItems(stockItems).then((_) {
-                                setState(() {});
-                              });
-                              SharePrefs.setValueItems(valueItems).then((_) {
-                                setState(() {});
-                              });  
-                              */
-
+                       
 
 
 
@@ -527,11 +504,6 @@ Widget _titleArea1() {
 
 
 
-            //],
-            //),
-          //),
-      
-        //Text('41'),
         Switch(
             value: _active,
             activeColor: Colors.orange,
@@ -550,20 +522,20 @@ Widget _titleArea1() {
 Widget _titleArealg(){
         return Container( 
           decoration: BoxDecoration(
-                  color: Color(0xFF0B4050),
-          ),   
-        child:
-        SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          
-         child: Wrap(
-                    alignment: WrapAlignment.start,
-                    spacing: 8.0,
-                    runSpacing: 0.0,
-                    direction: Axis.horizontal,
-                    children: _chipList,
-                  ),
-        ),
+            color: Color(0xFF0B4050),
+          ),
+          padding: EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 0.0),   
+          child:
+          SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Wrap(
+              alignment: WrapAlignment.start,
+              spacing: 10.0,
+              runSpacing: 10.0,
+              direction: Axis.horizontal,
+              children: _chipList,
+            ),
+          ),
         );
 }
 
@@ -571,7 +543,7 @@ Widget _titleArealg(){
 Widget _buttonArea() {
   return Container(
       color: Color(0xFF0B4050),//Colors.black,
-      margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+      //margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
       child: Row( // 1行目
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -639,42 +611,15 @@ The Neko is very cute. The Neko is super cute. Neko has been sleeping during the
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                //Expanded(
-               
-                //alignment: Alignment.topCenter,
-                //width: 1.7976931348623157e+308,
-                //height: 100.0,
-                //child:
                 _titleArea(),
-              //),
-              //Expanded(
-                //child:
-               // Divider(height: 2.0,color: Colors.purple),
-              //),
-              //Container(            
-                //child:
-                _titleArea1(),
-              //),
-            
-               
-               // _titleArealg(),  
-
-              
-              Expanded(
-                 flex: 5,
-                //alignment: Alignment.center,
-                //height: 600.0,
-              //color: Colors.black,
-               child:
-                _titleArealg(),
-              ),
-              Expanded(
-               // flex: 1,
-              child:
-                _buttonArea(),
-                //alignment: Alignment.bottomCenter,
-              ),
-              //_descriptionArea(),
+                _titleArea1(),           
+                Expanded(
+                  flex: 5,
+                  child: _titleArealg(),
+                ),
+                Expanded(
+                  child: _buttonArea(),
+                ),
             ],
           ),
         ),
@@ -683,6 +628,14 @@ The Neko is very cute. The Neko is super cute. Neko has been sleeping during the
   }
 
 }
+
+
+
+
+
+
+
+
 
 
 class Price
@@ -710,22 +663,3 @@ class Price
        
          //Price(this.code, this.stocks, this.itemprice,this.name,this.realValue,this.prev_day,this.percent );
     }
-/*
-class WebKeyFinder implements KeyFinder {
-
-  WebKeyFinder() {
-    windowLoc = window;
-    print("Widnow is initialized");
-    // storing something initially just to make sure it works. :)
-    windowLoc.localStorage["MyKey"] = "I am from web local storage";
-  }
-
-  String getKeyValue(String key) {
-    return windowLoc.localStorage[key];
-  }
-
-  void setKeyValue(String key, String value) {
-    windowLoc.localStorage[key] = value;
-  }  
-}
-*/
