@@ -76,7 +76,7 @@ void _init() async {
     stockItems = SharePrefs.getStockItems();
     valueItems = SharePrefs.getValueItems();
 
-
+    loadData();
     setState(() {});
 }
 
@@ -88,19 +88,18 @@ void _init() async {
     super.initState();
 
 
-    loadData();
-    print(codeItems);
+    //loadData();
+    //print(codeItems ?? "Null Data");
     _addChipfast("1234");
     _addChipfast("5678");
     _addChipfast("9012");
        
-    _addChip(load ?? "NonData");
-    _addChip("4");
-    _addChip("5");
-    _addChip("6");
-    _addChip("4");
-    _addChip("5");
-    _addChip("6");
+    //_addChip(load ?? "NonData","","");
+    _addChip("7658"," 1,000"," +10.0%");
+    _addChip("5555"," 5,555"," +10.0");
+    _addChip("7658"," 1,000"," +10.0%");
+    _addChip("7658"," 1,000"," +10.0%");
+    _addChip("7658"," 1,000"," +10.0%"); 
   }
 
   @override
@@ -164,7 +163,7 @@ void _addChipfast(String text) {
    }
 
 
-void _addChip(String text) {
+void _addChip(String code,String value, String resio) {
     var chipKey = Key('chip_key_$_keyNumber');
     _keyNumber++;
           
@@ -179,7 +178,7 @@ void _addChip(String text) {
           backgroundColor: Colors.red,//.grey.shade800,
           child: Text(_keyNumber.toString()),
         ),
-        label: Text(text.toString(),style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        label: Text(code.toString() + value.toString()+resio.toString(),style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         onDeleted: () => _deleteChip(chipKey),
       ),
     );
@@ -204,7 +203,7 @@ void _addChip(String text) {
     for(String code in codes) {
       
       fetch(code);
-     // _addChip("SONY"+" 1,234");
+      _addChip(code ," 100" ," 1,234");
     }
   }
 
@@ -468,55 +467,49 @@ Widget _titleArea1() {
                   ),
                 ),
               ),
-               
-                    InkWell(
-                            child: Icon(
-                              Icons.add_circle,
-                              color: Colors.blueAccent,
-                            ),
-                            onTap: () {
-                              if (/*eCtrl.text.isEmpty ||*/ codeCtrl.text.isEmpty || stockCtrl.text.isEmpty || valueCtrl.text.isEmpty) {
+              InkWell(
+                child: Icon(
+                  Icons.add_circle,
+                  color: Colors.blueAccent,
+                ),
+                onTap: () {
+                  if (/*eCtrl.text.isEmpty ||*/ codeCtrl.text.isEmpty || stockCtrl.text.isEmpty || valueCtrl.text.isEmpty) {
                               //if (eCtrl.text.isEmpty) _validate = true;
-                              if (codeCtrl.text.isEmpty)  _validateCode= true;
-                              if (stockCtrl.text.isEmpty)  _validateStock = true;
-                              if (valueCtrl.text.isEmpty)  _validateValue = true;
-                                setState(() {});
-                              } else {
-                                _validateCode = false;
-                                _validateStock = false;
-                                _validateValue = false;
-                                codeItems.add(codeCtrl.text);stockItems.add(stockCtrl.text);valueItems.add(valueCtrl.text);
-                              SharePrefs.setListItems(codeItems).then((_) {
-                                setState(() {});
-                              });
-
-                       
-
-
-
-                            
-                              codeCtrl.clear();stockCtrl.clear();valueCtrl.clear();
-                            }
-                          
-                          }
-                          ),
-
-
-
-
-        Switch(
-            value: _active,
-            activeColor: Colors.orange,
-            activeTrackColor: Colors.red,
-            inactiveThumbColor: Colors.blue,
-            inactiveTrackColor: Colors.green,
-            onChanged: _changeSwitch,
-          ) // 2.3列目
-  
-        ],
-    )
-  );
-}
+                    if (codeCtrl.text.isEmpty)  _validateCode= true;
+                    if (stockCtrl.text.isEmpty)  _validateStock = true;
+                    if (valueCtrl.text.isEmpty)  _validateValue = true;
+                    setState(() {});
+                  } else {
+                    _validateCode = false;
+                    _validateStock = false;
+                    _validateValue = false;
+                    codeItems.add(codeCtrl.text);stockItems.add(stockCtrl.text);valueItems.add(valueCtrl.text);
+                    SharePrefs.setCodeItems(codeItems).then((_) {
+                      setState(() {});
+                    });
+                    SharePrefs.setStockItems(stockItems).then((_) {
+                      setState(() {});
+                    });
+                    SharePrefs.setValueItems(valueItems).then((_) {
+                      setState(() {});
+                    });
+                    loadData();
+                    codeCtrl.clear();stockCtrl.clear();valueCtrl.clear();
+                  }
+                }
+              ),
+              Switch(
+                value: _active,
+                activeColor: Colors.orange,
+                activeTrackColor: Colors.red,
+                inactiveThumbColor: Colors.blue,
+                inactiveTrackColor: Colors.green,
+                onChanged: _changeSwitch,
+              )  
+            ],
+          )
+        );
+      }
 
 
 Widget _titleArealg(){
@@ -603,7 +596,7 @@ The Neko is very cute. The Neko is super cute. Neko has been sleeping during the
         //),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
-          onPressed: () => setState(() => _addChip(load)),
+          onPressed: () => setState(() => _addChip(load,"","")),
         ),
         body:SafeArea(
           child: Column(

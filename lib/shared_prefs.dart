@@ -25,11 +25,7 @@ class SharePrefs {
     _sharedPreferences.remove(value_Items);
     */
   }
-
-  static Future<bool> setListItems(List<String> value) =>
-      _sharedPreferences.setStringList(list_Items, value);
-  static List<String> getListItems() =>
-      _sharedPreferences.getStringList(list_Items) ?? [];
+ 
 
   ///
   static Future<bool> setCodeItems(List<String> value) =>
@@ -46,12 +42,5 @@ class SharePrefs {
   static List<String> getValueItems() =>
       _sharedPreferences.getStringList(value_Items) ?? [];    
   ///
-  
-  
-  static Future<bool> setCompletedItems(List<String> value) =>
-      _sharedPreferences.setStringList(completed_Items, value);
-
-
-  static List<String> getCompletedItems() =>
-      _sharedPreferences.getStringList(completed_Items) ?? [];
+    
 }
