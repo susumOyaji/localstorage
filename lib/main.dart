@@ -60,8 +60,13 @@ final TextEditingController valueCtrl = TextEditingController();
   
   
   int _counter = 0;
-  String load;
-  Future post;
+  String code;//
+  String presentvalue;//現在値
+  String beforeratio;//前日比
+  bool signalstate;//Up or Down
+
+
+
   var _chipListfast = List<Chip>();
   var _chipList = List<Chip>();
   var _keyNumber = 0;
@@ -175,10 +180,10 @@ void _addChip(String code,String value, String resio) {
         shadowColor: Colors.white,
         padding: EdgeInsets.all(4),
         avatar: CircleAvatar(
-          backgroundColor: Colors.red,//.grey.shade800,
+          backgroundColor: signalstate ? Colors.red : Colors.green,//.grey.shade800,
           child: Text(_keyNumber.toString()),
         ),
-        label: Text(code.toString() + value.toString()+resio.toString(),style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        label: Text(code + presentvalue + beforeratio ,style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         onDeleted: () => _deleteChip(chipKey),
       ),
     );
@@ -207,35 +212,9 @@ void _addChip(String code,String value, String resio) {
     }
   }
 
-  static List<Price> parse(var responce)
-  {
-    List<Price> prices = new List<Price>(); //ｺﾝｽﾄﾗｸﾀ
-    var list = responce.split("\n"); 
-              
-    for( String row in list ) {
-      if (row.isNotEmpty){
-        var lista = row.split(",");  
-                  
-        Price p = new Price();
-        p.code = lista[0];//企業コード
-        p.stocks = lista[1];//保有数
-        p.itemprice = lista[2];//購入単価
-                  
-        prices.add(p);
-        print('Finance=${list.indexOf(row)}: $row');
-      }
-    }                   
-    return prices;
-  }
 
 
-
-
-
-
-
-
-Future fetch(String load) async {
+  Future fetch(String load) async {
   String ret;
 
   final  response =
@@ -265,7 +244,7 @@ Future fetch(String load) async {
       RegExp regExp = RegExp(r'[0-9]{1,},[0-9]{1,}');//new RegExp(r"/[0-9]+/");
       setState(() {
         ret = regExp.stringMatch(json).toString();
-        load = ret;
+        code = ret;
         print("load : "+load);
       });
       
@@ -277,6 +256,8 @@ Future fetch(String load) async {
       } catch (exception) {
             intprice = 0.0;
       }
+      presentvalue= intprice;//現在値
+
       
       print("string to int : "+intprice.toString());
         
@@ -292,6 +273,7 @@ Future fetch(String load) async {
       //print("stringMatch : "+regExp.stringMatch(json).toString());
       String change = regExp.stringMatch(json).toString();
       print("Change : "+change);
+      beforeratio= change;//前日比%
         
      // print("allMatches : "+regExp.allMatches(json).toString());
      // print("firstMatch : "+regExp.firstMatch(json).toString());
@@ -301,6 +283,7 @@ Future fetch(String load) async {
       //print("stringMatch : "+regExp.stringMatch(json).toString());
       String signal = regExp.stringMatch(json).toString();
       print("Signal : "+signal);
+      //signalstate = signal;//Up or Down
         
      // print("allMatches : "+regExp.allMatches(json).toString());
      // print("firstMatch : "+regExp.firstMatch(json).toString());
@@ -311,6 +294,41 @@ Future fetch(String load) async {
           print("Red-Up");//Up
       }
 }
+
+
+
+
+
+
+
+  static List<Price> parse(var responce)
+  {
+    List<Price> prices = new List<Price>(); //ｺﾝｽﾄﾗｸﾀ
+    var list = responce.split("\n"); 
+              
+    for( String row in list ) {
+      if (row.isNotEmpty){
+        var lista = row.split(",");  
+                  
+        Price p = new Price();
+        p.code = lista[0];//企業コード
+        p.stocks = lista[1];//保有数
+        p.itemprice = lista[2];//購入単価
+                  
+        prices.add(p);
+        print('Finance=${list.indexOf(row)}: $row');
+      }
+    }                   
+    return prices;
+  }
+
+
+
+
+
+
+
+
 
 
 
@@ -596,7 +614,7 @@ The Neko is very cute. The Neko is super cute. Neko has been sleeping during the
         //),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
-          onPressed: () => setState(() => _addChip(load,"","")),
+          onPressed: () => setState(() => _addChip(code,"","")),
         ),
         body:SafeArea(
           child: Column(
