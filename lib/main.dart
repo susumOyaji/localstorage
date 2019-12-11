@@ -60,16 +60,17 @@ final TextEditingController valueCtrl = TextEditingController();
   
   
   int _counter = 0;
-  String code;//
-  String presentvalue;//現在値
-  String beforeratio;//前日比
-  bool signalstate;//Up or Down
+  static String code;//
+  static String presentvalue="non";//現在値
+  static String beforeratio="non";//前日比
+  static bool signalstate = true;//Up or Down
 
 
 
   var _chipListfast = List<Chip>();
   var _chipList = List<Chip>();
   var _keyNumber = 0;
+  var _keyNumberfast = 0;
   String price ="";
   String codename;//="Null to String";
   //String codename=""  
@@ -100,11 +101,11 @@ void _init() async {
     _addChipfast("9012");
        
     //_addChip(load ?? "NonData","","");
-    _addChip("7658"," 1,000"," +10.0%");
-    _addChip("5555"," 5,555"," +10.0");
-    _addChip("7658"," 1,000"," +10.0%");
-    _addChip("7658"," 1,000"," +10.0%");
-    _addChip("7658"," 1,000"," +10.0%"); 
+    //_addChip("7658"," 1,000"," +10.0%");
+    //_addChip("5555"," 5,555"," +10.0");
+    //_addChip("7658"," 1,000"," +10.0%");
+    //_addChip("7658"," 1,000"," +10.0%");
+    //_addChip("7658"," 1,000"," +10.0%"); 
   }
 
   @override
@@ -147,8 +148,8 @@ void _init() async {
 
 
 void _addChipfast(String text) {
-    var chipKey = Key('chip_key_$_keyNumber');
-    _keyNumber++;
+    var chipKey = Key('chip_key_$_keyNumberfast');
+    _keyNumberfast++;
         
     _chipListfast.add(
       Chip(
@@ -159,7 +160,7 @@ void _addChipfast(String text) {
         padding: EdgeInsets.all(4),
         avatar: CircleAvatar(
           backgroundColor: Colors.green,//.grey.shade800,
-          child: Text(_keyNumber.toString()),
+          child: Text(_keyNumberfast.toString()),
         ),
         label: Text(text,style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
         //onDeleted: () => _deleteChip(chipKey),
@@ -168,8 +169,9 @@ void _addChipfast(String text) {
    }
 
 
-void _addChip(String code,String value, String resio) {
-    var chipKey = Key('chip_key_$_keyNumber');
+void _addChip(String code,String presentvalue, String deforerasio) {
+    //var chipKey = Key('chip_key_$_keyNumber');
+    var chipKey =  Key("$_keyNumber");
     _keyNumber++;
           
     _chipList.add(
@@ -183,7 +185,8 @@ void _addChip(String code,String value, String resio) {
           backgroundColor: signalstate ? Colors.red : Colors.green,//.grey.shade800,
           child: Text(_keyNumber.toString()),
         ),
-        label: Text(code + presentvalue + beforeratio ,style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        label: Text(code + " " + presentvalue + " " + deforerasio ,
+          style: TextStyle(color: Colors.white, fontSize: 9.0,fontWeight: FontWeight.bold)),
         onDeleted: () => _deleteChip(chipKey),
       ),
     );
@@ -196,31 +199,36 @@ void _addChip(String code,String value, String resio) {
   
   void _deleteChip(Key chipKey) {
     setState(() => _chipList.removeWhere((Widget w) => w.key == chipKey));
+    int _index = int.parse(chipKey.toString());
+    codeItems.removeAt(_index);
+    stockItems.removeAt(_index);
+    valueItems.removeAt(_index);
+    SharePrefs.setCodeItems(codeItems);
+    SharePrefs.setStockItems(stockItems);
+    SharePrefs.setValueItems(valueItems);
   }
 
 
 
   loadData() async {
     //String responce ="6758,200,1665\n9837,200,712\n6976,200,1746\n6753,0,0\n";
-    List<String> codes = codeItems;
     //_incrementCounter();
-
-    for(String code in codes) {
-      
-      fetch(code);
-      _addChip(code ," 100" ," 1,234");
+    
+    for(String codes in codeItems) {
+      await fetch(codes);
+      _addChip(code ,presentvalue,beforeratio);
     }
   }
 
 
 
-  Future fetch(String load) async {
-  String ret;
+  Future fetch(String codes) async {
+ 
 
   final  response =
       await http.get("https://stocks.finance.yahoo.co.jp/stocks/detail/?code=6976.T");//^DJI
       final String json = response.body;
-
+       String ret;
 
       //print(response);
       //RegExp regexp = RegExp(r"^/?code=");
@@ -243,9 +251,10 @@ void _addChip(String code,String value, String resio) {
 
       RegExp regExp = RegExp(r'[0-9]{1,},[0-9]{1,}');//new RegExp(r"/[0-9]+/");
       setState(() {
-        ret = regExp.stringMatch(json).toString();
-        code = ret;
-        print("load : "+load);
+      ret = regExp.stringMatch(json).toString();
+         code = codes;
+         presentvalue= ret;
+        print("code : "+code);
       });
       
       print("StockPrice : "+ret);
@@ -256,8 +265,9 @@ void _addChip(String code,String value, String resio) {
       } catch (exception) {
             intprice = 0.0;
       }
-      presentvalue= intprice;//現在値
-
+       setState(() {
+        presentvalue= ret;//intprice;//現在値
+       });
       
       print("string to int : "+intprice.toString());
         
@@ -273,8 +283,9 @@ void _addChip(String code,String value, String resio) {
       //print("stringMatch : "+regExp.stringMatch(json).toString());
       String change = regExp.stringMatch(json).toString();
       print("Change : "+change);
-      beforeratio= change;//前日比%
-        
+      setState(() {
+        beforeratio= change;//前日比%
+      });  
      // print("allMatches : "+regExp.allMatches(json).toString());
      // print("firstMatch : "+regExp.firstMatch(json).toString());
       print("hasMatch : "+regExp.hasMatch(json).toString());
@@ -282,6 +293,11 @@ void _addChip(String code,String value, String resio) {
       regExp = RegExp(r'icoUpGreen');//new RegExp(r"/[0-9]+/");
       //print("stringMatch : "+regExp.stringMatch(json).toString());
       String signal = regExp.stringMatch(json).toString();
+      if (signal == "null"){
+        signalstate = false;
+      }else{
+        signalstate = true;
+      }
       print("Signal : "+signal);
       //signalstate = signal;//Up or Down
         
@@ -613,8 +629,8 @@ The Neko is very cute. The Neko is super cute. Neko has been sleeping during the
           //title: Text('Fetch Data Example'),
         //),
         floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () => setState(() => _addChip(code,"","")),
+          child: Icon(Icons.refresh),
+          onPressed: () => setState(() => _addChip("code","","")),
         ),
         body:SafeArea(
           child: Column(
