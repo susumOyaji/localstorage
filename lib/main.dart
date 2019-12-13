@@ -182,6 +182,7 @@ void _addChip(String code,String presentvalue, String deforerasio) {
         shadowColor: Colors.white,
         padding: EdgeInsets.all(4),
         avatar: CircleAvatar(
+          maxRadius: 8.0,
           backgroundColor: signalstate ? Colors.red : Colors.green,//.grey.shade800,
           child: Text(_keyNumber.toString()),
         ),
@@ -199,10 +200,12 @@ void _addChip(String code,String presentvalue, String deforerasio) {
   
   void _deleteChip(Key chipKey) {
     setState(() => _chipList.removeWhere((Widget w) => w.key == chipKey));
-    int _index = int.parse(chipKey.toString());
-    codeItems.removeAt(_index);
-    stockItems.removeAt(_index);
-    valueItems.removeAt(_index);
+    //int _index = int.parse(chipKey);
+    String listJsonData = json.decode(chipKey.toString());
+    
+    codeItems.removeAt(0);
+    stockItems.removeAt(0);
+    valueItems.removeAt(0);
     SharePrefs.setCodeItems(codeItems);
     SharePrefs.setStockItems(stockItems);
     SharePrefs.setValueItems(valueItems);
@@ -527,7 +530,7 @@ Widget _titleArea1() {
                     SharePrefs.setValueItems(valueItems).then((_) {
                       setState(() {});
                     });
-                    loadData();
+                    //loadData();
                     codeCtrl.clear();stockCtrl.clear();valueCtrl.clear();
                   }
                 }
