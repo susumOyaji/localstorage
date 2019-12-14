@@ -63,6 +63,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
   String price = "";
   String codename; //="Null to String";
   ScrollController _scrollController;//String codename=""
+  
 
   void _init() async {
     await SharePrefs.setInstance();
@@ -101,6 +102,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     super.dispose();
   }
 
+  
  
     
     //_scrollController.positions(1.0);
@@ -133,7 +135,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     _decrementCounter();//save to countDown
   }
   */
-
+  
   void _addChipfast(String text) {
     var chipKey = Key('chip_key_$_keyNumberfast');
     _keyNumberfast++;
@@ -206,6 +208,8 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
       _addChip(code, presentvalue, beforeratio);
     }
   }
+
+
 
   Future fetch(String codes) async {
     final response = await http.get(
@@ -319,6 +323,9 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
   bool _active = false;
 
   void _changeSwitch(bool e) => setState(() => _active = e);
+
+
+  
 
   Widget _titleArea1() {
     return Container(
@@ -481,9 +488,10 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
                     setState(() {
                       //dispose();
                       _keyNumber=0;
-                      
-                      ScrollPosition _scrollposition= ScrollPosition(1.0 ,1/*_scrollController.position.maxScrollExtent*/);
-                      _scrollController.attach(_scrollposition);
+
+                      scrollCallback(double position) => _scrollController.position.jumpTo(_scrollController.position.pixels - position);
+                      //ScrollPosition _scrollposition= ScrollPosition(1.0 ,1/*_scrollController.position.maxScrollExtent*/);
+                      //_scrollController.attach(_scrollposition);
                       loadData();
                     });
                             
@@ -521,6 +529,10 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
       ),
     );
   }
+
+
+
+  
 
   Widget _buttonArea() {
     return Container(
@@ -568,6 +580,10 @@ The Neko is very cute. The Neko is super cute. Neko has been sleeping during the
       ),
     );
   }
+
+
+
+  
 
   @override
   Widget build(BuildContext context) {
