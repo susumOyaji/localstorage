@@ -50,7 +50,6 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
   final TextEditingController stockCtrl = TextEditingController();
   final TextEditingController valueCtrl = TextEditingController();
 
-  int _counter = 0;
   static String code; //
   static String presentvalue = "non"; //現在値
   static String beforeratio = "non"; //前日比
@@ -62,7 +61,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
   var _keyNumberfast = 0;
   String price = "";
   String codename; //="Null to String";
-  ScrollController _scrollController;//String codename=""
+  
   
 
   void _init() async {
@@ -82,13 +81,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     _addChipfast("1234");
     _addChipfast("5678");
     _addChipfast("9012");
-
-    //loadData();
-
-    //_scrollController = ScrollController();
-    //_scrollController.addListener(_scrollListener); // ←追加
-    
-    //_scrollController.initialScrollOffset;
+        
     super.initState();   
     
   }
@@ -98,7 +91,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     codeCtrl.dispose();
     stockCtrl.dispose();
     valueCtrl.dispose();
-    _scrollController.dispose();  
+   
     super.dispose();
   }
 
@@ -176,10 +169,10 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
               signalstate ? Colors.red : Colors.green, //.grey.shade800,
           child: Text(_keyNumber.toString()),
         ),
-        label: Text(code + " " + presentvalue + " " + deforerasio,
+        label: Text(code + " " + presentvalue + "  " + deforerasio,
             style: TextStyle(
                 color: Colors.white,
-                fontSize: 9.0,
+                fontSize: 10.0,
                 fontWeight: FontWeight.bold)),
         onDeleted: () => _deleteChip(chipKey),
       ),
@@ -200,7 +193,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
   }
 
   loadData() async {
-    //String responce ="6758,200,1665\n9837,200,712\n6976,200,1746\n6753,0,0\n";
+    //String responce ="6758,200,1665\n6976,400,1746\n395,0,0\n";
     //_incrementCounter();
 
     for (String codes in codeItems) {
@@ -210,12 +203,27 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
   }
 
 
+  
+  addfetch(String codes) async {
+    await fetch(codes);
+    _addChip(codes, presentvalue, beforeratio);
+  }
+
+
+  _reloadData() async {
+    for (String codes in codeItems) {
+      await fetch(codes);
+      //_addChip(code, presentvalue, beforeratio);
+    }
+  }
+
 
   Future fetch(String codes) async {
     final response = await http.get(
-        "https://stocks.finance.yahoo.co.jp/stocks/detail/?code=6976.T"); //^DJI
+        "https://stocks.finance.yahoo.co.jp/stocks/detail/?code="+codes+".T"); //^DJI
     final String json = response.body;
     String ret;
+    String value;
 
     //print(response);
     //RegExp regexp = RegExp(r"^/?code=");
@@ -235,15 +243,24 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     //  print(m.group(0));
     //}
 
-    RegExp regExp = RegExp(r'[0-9]{1,},[0-9]{1,}'); //new RegExp(r"/[0-9]+/");
+    RegExp regExp = RegExp(r'[0-9]{1,},[0-9]{1,}'); //1,234;
     setState(() {
-      ret = regExp.stringMatch(json).toString();
-      code = codes;
-      presentvalue = ret;
-      print("code : " + code);
+      value = regExp.stringMatch(json).toString();
+      //code = codes;
+      presentvalue = value;
+      //print("code : " + code);
+    });
+    print("StockPrice : " + value);
+
+
+    regExp = RegExp(r'<h1>.+</h1>');
+    setState(() {
+    ret = regExp.stringMatch(json).toString();
+    ret = ret.replaceAll("<h1>", "");
+    code = ret.replaceAll("</h1>", "");
+    print("code-name : " + code);
     });
 
-    print("StockPrice : " + ret);
 
     var intprice;
     try {
@@ -252,7 +269,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
       intprice = 0.0;
     }
     setState(() {
-      presentvalue = ret; //intprice;//現在値
+      //presentvalue = ret; //intprice;//現在値
     });
 
     print("string to int : " + intprice.toString());
@@ -323,7 +340,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
   bool _active = false;
 
   void _changeSwitch(bool e) => setState(() => _active = e);
-
+ 
 
   
 
@@ -395,7 +412,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
                     errorText:
                         _validateStock ? 'The Stock input is empty.' : null,
                     contentPadding: const EdgeInsets.only(
-                        left: 25.0, bottom: 15.0, top: 15.0),
+                        left: 0.0, bottom: 15.0, top: 15.0),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.white),
                       borderRadius: BorderRadius.circular(5.0),
@@ -467,6 +484,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
                 child: Icon(
                   Icons.add_circle,
                   color: Colors.blueAccent,
+                  semanticLabel: "",
                 ),
                 onTap: () {
                   if (/*eCtrl.text.isEmpty ||*/ codeCtrl.text.isEmpty ||
@@ -486,13 +504,8 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
                     SharePrefs.setStockItems(stockItems);
                     SharePrefs.setValueItems(valueItems);
                     setState(() {
-                      //dispose();
-                      _keyNumber=0;
-
-                      scrollCallback(double position) => _scrollController.position.jumpTo(_scrollController.position.pixels - position);
-                      //ScrollPosition _scrollposition= ScrollPosition(1.0 ,1/*_scrollController.position.maxScrollExtent*/);
-                      //_scrollController.attach(_scrollposition);
-                      loadData();
+                      addfetch(codeCtrl.text);
+                     
                     });
                             
                     codeCtrl.clear();stockCtrl.clear();valueCtrl.clear();
@@ -517,7 +530,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
       ),
       padding: EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 0.0),
       child: SingleChildScrollView(
-        controller: _scrollController,
+        //controller: 
         scrollDirection: Axis.vertical,
         child: Wrap(
           alignment: WrapAlignment.start,
@@ -593,8 +606,9 @@ The Neko is very cute. The Neko is super cute. Neko has been sleeping during the
         //title: Text('Fetch Data Example'),
         //),
         floatingActionButton: FloatingActionButton(
+          mini: true,
           child: Icon(Icons.refresh),
-          onPressed: () => setState(() => _addChip("code", "", "")),
+          onPressed: () => setState(() => _reloadData()),// _addChip("code", "", "")),
         ),
         body: SafeArea(
           child: Column(
