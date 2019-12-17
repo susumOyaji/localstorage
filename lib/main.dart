@@ -61,7 +61,8 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
   var _keyNumberfast = 0;
   String price = "";
   String codename; //="Null to String";
-  
+  int intprice=0;
+  String stringprice ="";
   
 
   void _init() async {
@@ -71,19 +72,16 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     stockItems = SharePrefs.getStockItems();
     valueItems = SharePrefs.getValueItems();
 
+    loadDatafast("998407.O");
+    loadDatafast("^DJI");
     loadData();
-    setState(() {});
   }
 
   @override
   void initState() {
     _init();
-    _addChipfast("1234");
-    _addChipfast("5678");
-    _addChipfast("9012");
-        
+
     super.initState();   
-    
   }
 
   @override
@@ -129,27 +127,29 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
   }
   */
   
-  void _addChipfast(String text) {
+  void _addChipfast(String code,String presentvalue, String beforeratio ) {
     var chipKey = Key('chip_key_$_keyNumberfast');
     _keyNumberfast++;
 
     _chipListfast.add(
       Chip(
         key: chipKey,
-        backgroundColor: Colors.orange,
+        backgroundColor: Color(0XFF8069A1),//Colors.orange,
         elevation: 4,
         //shadowColor: Colors.white,
         padding: EdgeInsets.all(4),
         avatar: CircleAvatar(
-          backgroundColor: Colors.green, //.grey.shade800,
+          backgroundColor:  signalstate ? Colors.red : Colors.green,//Colors.green, //.grey.shade800,
           child: Text(_keyNumberfast.toString()),
         ),
-        label: Text(text,
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-        //onDeleted: () => _deleteChip(chipKey),
+        label: Text(code+"   "+presentvalue,
+          style: TextStyle(color: Color(0XFFACACAE),
+                  fontSize:10.0,
+                  fontWeight: FontWeight.bold)),
       ),
     );
   }
+
 
   void _addChip(String code, String presentvalue, String deforerasio) {
     //var chipKey = Key('chip_key_$_keyNumber');
@@ -171,7 +171,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
         ),
         label: Text(code + " " + presentvalue + "  " + deforerasio,
             style: TextStyle(
-                color: Colors.white,
+                color: Color(0XFFACACAE),//Colors.white,
                 fontSize: 10.0,
                 fontWeight: FontWeight.bold)),
         onDeleted: () => _deleteChip(chipKey),
@@ -192,14 +192,32 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     });
   }
 
+
+  loadDatafast(String codes) async {
+    //String responce ="6758,200,1665\n6976,400,1746\n395,0,0\n";
+    //_incrementCounter();
+    await fetch(codes);
+    _addChipfast(code, presentvalue, beforeratio);
+    
+  }
+
+  loadDatGainsum()
+  {
+    _addChipfast(code, presentvalue, beforeratio);
+  }
+
+
+
   loadData() async {
     //String responce ="6758,200,1665\n6976,400,1746\n395,0,0\n";
     //_incrementCounter();
-
+    intprice=0;
     for (String codes in codeItems) {
       await fetch(codes);
       _addChip(code, presentvalue, beforeratio);
     }
+    stringprice = intprice.toString();
+    _addChipfast("Gain: ", stringprice, beforeratio);
   }
 
 
@@ -212,6 +230,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
 
   _reloadData() async {
     for (String codes in codeItems) {
+      codes= codes+".T";
       await fetch(codes);
       //_addChip(code, presentvalue, beforeratio);
     }
@@ -220,81 +239,59 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
 
   Future fetch(String codes) async {
     final response = await http.get(
-        "https://stocks.finance.yahoo.co.jp/stocks/detail/?code="+codes+".T"); //^DJI
+        "https://stocks.finance.yahoo.co.jp/stocks/detail/?code="+codes);//+".T"); //^DJI
     final String json = response.body;
     String ret;
     String value;
 
-    //print(response);
-    //RegExp regexp = RegExp(r"^/?code=");
-    //String match = json;
-    //regexp.allMatches(response.body).forEach((match) {
-    //  String iconName = match.group(1);
-    //  String codePoint = match.group(2);
-
-    //});
-
-    //RegExp match1 = RegExp(r"/[0-9]+/");
-    //print("abc123".allMatches(match1,0));        // => 123
-
-    //var invalidEmail = 'f@il@example.com';
-    //Iterable<Match> matches = new RegExp(/@'@').allMatches(invalidEmail);
-    //for (Match m in matches) {
-    //  print(m.group(0));
-    //}
-
-    RegExp regExp = RegExp(r'[0-9]{1,},[0-9]{1,}'); //1,234;
+ 
+    RegExp regExp = RegExp(r'<title>.+【');
     setState(() {
-      value = regExp.stringMatch(json).toString();
-      //code = codes;
-      presentvalue = value;
-      //print("code : " + code);
-    });
-    print("StockPrice : " + value);
-
-
-    regExp = RegExp(r'<h1>.+</h1>');
-    setState(() {
-    ret = regExp.stringMatch(json).toString();
-    ret = ret.replaceAll("<h1>", "");
-    code = ret.replaceAll("</h1>", "");
+      ret = regExp.stringMatch(json).toString();//name
+      ret = ret.replaceAll("<title>", "");
+      code = ret.replaceAll("【", "");
     print("code-name : " + code);
     });
 
-
-    var intprice;
-    try {
-      intprice = int.parse(ret.replaceAll(",", ""));
-    } catch (exception) {
-      intprice = 0.0;
-    }
+    /*
+    regExp = RegExp(r'<h1>.+</h1>');
     setState(() {
-      //presentvalue = ret; //intprice;//現在値
+      ret = regExp.stringMatch(json).toString();//name
+      ret = ret.replaceAll("<h1>", "");
+      code = ret.replaceAll("</h1>", "");
+    print("code-name : " + code);
     });
+    */
+
+
+    regExp = RegExp(r'[0-9]{1,},[0-9]{1,}'); //1,234;
+    setState(() {
+      value = regExp.stringMatch(json).toString();//現在値
+      presentvalue = value;
+    });
+    print("StockPrice : " + value);
+
+    try {
+      intprice = intprice + int.parse(value.replaceAll(",", ""));//string for int
+    } catch (exception) {
+      intprice = 0;
+    }
+
 
     print("string to int : " + intprice.toString());
-
-    //print("allMatches : "+regExp.allMatches(json).toString());
-    //print("firstMatch : "+regExp.firstMatch(json).toString());
     print("hasMatch : " + regExp.hasMatch(json).toString());
-    //for (Match match in matches) {
-    //  print(match.group(1));
-    //}
+    
 
-    regExp =
-        RegExp(r'[+-][0-9]{1,}.[+-]..[0-9]{1,}%.'); //new RegExp(r"/[0-9]+/");
-    //print("stringMatch : "+regExp.stringMatch(json).toString());
+    regExp = RegExp(r'[+-][0-9]{1,}.[+-]..[0-9]{1,}%.'); 
     String change = regExp.stringMatch(json).toString();
     print("Change : " + change);
     setState(() {
       beforeratio = change; //前日比%
     });
-    // print("allMatches : "+regExp.allMatches(json).toString());
-    // print("firstMatch : "+regExp.firstMatch(json).toString());
-    print("hasMatch : " + regExp.hasMatch(json).toString());
+    print("Change : " + regExp.hasMatch(json).toString());
+
 
     regExp = RegExp(r'icoUpGreen'); //new RegExp(r"/[0-9]+/");
-    //print("stringMatch : "+regExp.stringMatch(json).toString());
     String signal = regExp.stringMatch(json).toString();
     if (signal == "null") {
       signalstate = false;
@@ -302,10 +299,6 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
       signalstate = true;
     }
     print("Signal : " + signal);
-    //signalstate = signal;//Up or Down
-
-    // print("allMatches : "+regExp.allMatches(json).toString());
-    // print("firstMatch : "+regExp.firstMatch(json).toString());
     print("hasMatch : " + regExp.hasMatch(json).toString());
     if ((regExp.hasMatch(json)) == false) {
       print("Green-Down"); //Down
