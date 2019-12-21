@@ -7,6 +7,9 @@ class SharePrefs {
   static final code_Items = "code_items";
   static final stock_Items = "stock_items";
   static final value_Items = "value_items";
+  static final acquiredAssets_Items = "acquiredAssets_Items";
+  static final valuableAssets_Items = "valuableAssets_Items";
+
 
 
 
@@ -33,14 +36,25 @@ class SharePrefs {
   static Future<bool> setStockItems(List<String> value) =>
       _sharedPreferences.setStringList(stock_Items, value);
   static Future<bool> setValueItems(List<String> value) =>
-      _sharedPreferences.setStringList(value_Items, value);  
+      _sharedPreferences.setStringList(value_Items, value);
+  static Future<bool> setacquiredAssetsItems(List<String> value) =>
+      _sharedPreferences.setStringList(acquiredAssets_Items, value);
+  static Future<bool> setvaluableAssetsItems(List<String> value) =>
+      _sharedPreferences.setStringList(valuableAssets_Items, value);  
+
+
+
   
   static List<String> getCodeItems() =>
       _sharedPreferences.getStringList(code_Items) ?? [];
   static List<String> getStockItems() =>
       _sharedPreferences.getStringList(stock_Items) ?? [];
   static List<String> getValueItems() =>
-      _sharedPreferences.getStringList(value_Items) ?? [];    
+      _sharedPreferences.getStringList(value_Items) ?? [];
+  static List<String> getacquiredAssetsItems() =>
+      _sharedPreferences.getStringList(acquiredAssets_Items) ?? [];
+  static List<String> getvaluableAssetsItems() =>
+      _sharedPreferences.getStringList(valuableAssets_Items) ?? [];            
   ///
     
 }

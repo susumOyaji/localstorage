@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 //import 'package:shared_preferences/shared_preferences.dart';
+//import '../../../../development/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences-0.4.3/lib/shared_preferences.dart';
 import 'shared_prefs.dart';
 //import 'key_finder_interface.dart';
 
 void main() {
-  //debugPaintSizeEnabled = false; // runApp関数
   runApp(MyApp());
 }
 
@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext _initialScrollOffsetcontext) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,  // <- Debug の 表示を OFF
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -39,8 +40,13 @@ class _MyAppStateWiget extends StatefulWidget {
 
 class _MyAppWigetState extends State<_MyAppStateWiget> {
   List<String> codeItems = []; //codekey
-  List<String> stockItems = [];
-  List<String> valueItems = []; //stock and value
+  List<String> stockItems = [];//stock
+  List<String> valueItems = []; //value
+
+  List<String> acquiredAssetsItems = [];//取得資産 stock x value
+  List<String> valuableAssetsItems = [];//評価資産 stock X presentvalue
+  int acquiredAssetsSum = 0;//取得資産合計
+  int valuableAssetsSum = 0;//評価資産合計
 
   bool _validateCode = false;
   bool _validateStock = false;
@@ -62,6 +68,8 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
   String price = "";
   String codename; //="Null to String";
   int intprice=0;
+  int index=0;
+  bool purchase = false;
   String stringprice ="";
   
 
@@ -71,10 +79,16 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     codeItems = SharePrefs.getCodeItems();
     stockItems = SharePrefs.getStockItems();
     valueItems = SharePrefs.getValueItems();
+    acquiredAssetsItems = SharePrefs.getacquiredAssetsItems();//取得資産
+    valuableAssetsItems = SharePrefs.getvaluableAssetsItems();
 
-    loadDatafast("998407.O");
-    loadDatafast("^DJI");
-    loadData();
+
+
+    await loadDatafast("998407.O");
+    await loadDatafast("^DJI");
+    //await loadDatGainsum();
+    await loadData();
+    
   }
 
   @override
@@ -142,7 +156,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
           backgroundColor:  signalstate ? Colors.red : Colors.green,//Colors.green, //.grey.shade800,
           child: Text(_keyNumberfast.toString()),
         ),
-        label: Text(code+"   "+presentvalue,
+        label: Text(code+"     "+presentvalue + "   " + beforeratio,
           style: TextStyle(color: Color(0XFFACACAE),
                   fontSize:10.0,
                   fontWeight: FontWeight.bold)),
@@ -203,7 +217,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
 
   loadDatGainsum()
   {
-    _addChipfast(code, presentvalue, beforeratio);
+    _addChipfast("code", presentvalue, beforeratio);
   }
 
 
@@ -212,12 +226,15 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     //String responce ="6758,200,1665\n6976,400,1746\n395,0,0\n";
     //_incrementCounter();
     intprice=0;
+    index=intprice;
+    purchase = true;
+
     for (String codes in codeItems) {
       await fetch(codes);
       _addChip(code, presentvalue, beforeratio);
     }
-    stringprice = intprice.toString();
-    _addChipfast("Gain: ", stringprice, beforeratio);
+    
+    _addChipfast("Gain: ", acquiredAssetsSum.toString(), valuableAssetsSum.toString());
   }
 
 
@@ -271,13 +288,6 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     });
     print("StockPrice : " + value);
 
-    try {
-      intprice = intprice + int.parse(value.replaceAll(",", ""));//string for int
-    } catch (exception) {
-      intprice = 0;
-    }
-
-
     print("string to int : " + intprice.toString());
     print("hasMatch : " + regExp.hasMatch(json).toString());
     
@@ -289,6 +299,21 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
       beforeratio = change; //前日比%
     });
     print("Change : " + regExp.hasMatch(json).toString());
+
+    if (purchase == true){
+      try {
+        intprice = intprice + int.parse(value.replaceAll(",", ""));//string for int
+      } catch (exception) {
+        intprice = 0;
+      }
+
+      acquiredAssetsItems.add((int.parse(stockItems[index]) * int.parse(valueItems[index])).toString());//取得資産
+      valuableAssetsItems.add((int.parse(value.replaceAll(",", "")) * int.parse(stockItems[index])).toString());//評価資産
+
+   
+      acquiredAssetsSum = acquiredAssetsSum + int.parse(acquiredAssetsItems[index]);//取得資産合計
+      valuableAssetsSum = valuableAssetsSum + int.parse(valuableAssetsItems[index]);//評価資産
+    }
 
 
     regExp = RegExp(r'icoUpGreen'); //new RegExp(r"/[0-9]+/");
