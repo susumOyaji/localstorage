@@ -383,8 +383,9 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
                 child: TextField(
                   controller: codeCtrl,
                   decoration: InputDecoration(
+                    labelText: '名前',
                     border: InputBorder.none,
-                    hintText: "code",
+                    //hintText: "code",
                     hintStyle: TextStyle(
                         color: Colors.white,
                         fontSize: 12.0,
@@ -619,6 +620,7 @@ The Neko is very cute. The Neko is super cute. Neko has been sleeping during the
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         //appBar: AppBar(
         //title: Text('Fetch Data Example'),
