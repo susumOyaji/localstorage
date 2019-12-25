@@ -71,7 +71,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
   int index=0;
   bool purchase = false;
   String stringprice ="";
-  
+  int gain=0;
 
   void _init() async {
     await SharePrefs.setInstance();
@@ -141,10 +141,11 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
   }
   */
   
-  void _addChipfast(String code,String presentvalue, String beforeratio ) {
+  void _addChipfast(String code,String presentvalue, String beforeratio,String gain) {
     var chipKey = Key('chip_key_$_keyNumberfast');
     _keyNumberfast++;
 
+     
     _chipListfast.add(
       Chip(
         key: chipKey,
@@ -156,7 +157,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
           backgroundColor:  signalstate ? Colors.red : Colors.green,//Colors.green, //.grey.shade800,
           child: Text(_keyNumberfast.toString()),
         ),
-        label: Text(code+"     "+presentvalue + "   " + beforeratio,
+        label: Text(code+presentvalue +beforeratio + gain,
           style: TextStyle(color: Color(0XFFACACAE),
                   fontSize:10.0,
                   fontWeight: FontWeight.bold)),
@@ -211,13 +212,13 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     //String responce ="6758,200,1665\n6976,400,1746\n395,0,0\n";
     //_incrementCounter();
     await fetch(codes);
-    _addChipfast(code, presentvalue, beforeratio);
+    _addChipfast(code, presentvalue, beforeratio,gain.toString());
     
   }
 
   loadDatGainsum()
   {
-    _addChipfast("code", presentvalue, beforeratio);
+    _addChipfast("code", presentvalue, beforeratio,gain.toString());
   }
 
 
@@ -226,7 +227,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     //String responce ="6758,200,1665\n6976,400,1746\n395,0,0\n";
     //_incrementCounter();
     intprice=0;
-    index=intprice;
+    index=0;
     purchase = true;
 
     for (String codes in codeItems) {
@@ -234,7 +235,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
       _addChip(code, presentvalue, beforeratio);
     }
     
-    _addChipfast("Gain: ", acquiredAssetsSum.toString(), valuableAssetsSum.toString());
+    _addChipfast("Gain:",gain.toString(),"  取得額: "+acquiredAssetsSum.toString(), "  評価額: "+valuableAssetsSum.toString());
   }
 
 
@@ -246,6 +247,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
 
 
   _reloadData() async {
+    index=0;
     for (String codes in codeItems) {
       codes= codes+".T";
       await fetch(codes);
@@ -286,6 +288,10 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
       value = regExp.stringMatch(json).toString();//現在値
       presentvalue = value;
     });
+
+
+
+
     print("StockPrice : " + value);
 
     print("string to int : " + intprice.toString());
@@ -306,15 +312,37 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
       } catch (exception) {
         intprice = 0;
       }
-
       acquiredAssetsItems.add((int.parse(stockItems[index]) * int.parse(valueItems[index])).toString());//取得資産
-      valuableAssetsItems.add((int.parse(value.replaceAll(",", "")) * int.parse(stockItems[index])).toString());//評価資産
+      
+      try{
+        valuableAssetsItems.add((int.parse(value.replaceAll(",", "")) * int.parse(stockItems[index])).toString());//評価資産
+      }catch(exception){
+        valuableAssetsItems.add("0");
+      }
+
+      setState(() {
+        acquiredAssetsSum = acquiredAssetsSum + int.parse(acquiredAssetsItems[index]);//取得資産合計
+        valuableAssetsSum = valuableAssetsSum + int.parse(valuableAssetsItems[index]);//評価資産
+      });
+     
+      index++;
+    }
+    //regExp = RegExp(r'(?=(?:\d{3})+$)');
+    //int num = 10000000;
+    // print("hasMatch : " + regExp.hasMatch(num).toString());
+    var kanma = acquiredAssetsSum.toString().replaceAll(RegExp('[\d][?=[\d\d\d+[?!\d]g,'), '$acquiredAssetsSum,');
+    print('replaceAll: '+kanma);
+
+    var num = '10000000';
+    num = num.split(RegExp('[?=[?:\d{3}]+$num,]')).join();
+    print('split: '+num); 
+     
+
+    setState(() {
+       gain = valuableAssetsSum - acquiredAssetsSum;
+    });
 
    
-      acquiredAssetsSum = acquiredAssetsSum + int.parse(acquiredAssetsItems[index]);//取得資産合計
-      valuableAssetsSum = valuableAssetsSum + int.parse(valuableAssetsItems[index]);//評価資産
-    }
-
 
     regExp = RegExp(r'icoUpGreen'); //new RegExp(r"/[0-9]+/");
     String signal = regExp.stringMatch(json).toString();
