@@ -155,7 +155,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
         padding: EdgeInsets.all(4),
         avatar: CircleAvatar(
           backgroundColor:  signalstate ? Colors.red : Colors.green,//Colors.green, //.grey.shade800,
-          child: Text(_keyNumberfast.toString()),
+          //child: Text(_keyNumberfast.toString()),
         ),
         label: Text(code+presentvalue +beforeratio + gain,
           style: TextStyle(color: Color(0XFFACACAE),
@@ -175,11 +175,11 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
       Chip(
         key: chipKey,
         backgroundColor: Color(0XFF12445D),
-        elevation: 4,
-        shadowColor: Colors.white,
-        padding: EdgeInsets.all(4),
+        elevation: 8,
+        //shadowColor: Colors.white,
+        //padding: EdgeInsets.all(4),
         avatar: CircleAvatar(
-          maxRadius: 8.0,
+          maxRadius: 10.0,
           backgroundColor:
               signalstate ? Colors.red : Colors.green, //.grey.shade800,
           child: Text(_keyNumber.toString()),
@@ -272,17 +272,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     print("code-name : " + code);
     });
 
-    /*
-    regExp = RegExp(r'<h1>.+</h1>');
-    setState(() {
-      ret = regExp.stringMatch(json).toString();//name
-      ret = ret.replaceAll("<h1>", "");
-      code = ret.replaceAll("</h1>", "");
-    print("code-name : " + code);
-    });
-    */
-
-
+   
     regExp = RegExp(r'[0-9]{1,},[0-9]{1,}'); //1,234;
     setState(() {
       value = regExp.stringMatch(json).toString();//現在値
@@ -333,7 +323,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
 
     
     //var kanma = acquiredAssetsSum.toString().replaceAll(RegExp('[\d][?=[\d\d\d+[?!\d]g,'), '$acquiredAssetsSum,');
-    var kanma = num.replaceAll(regExp , '${1},');
+    var kanma = num.replaceAll(regExp , ",");
     print('replaceAll: '+kanma);
 
     //var num = '10000000';
