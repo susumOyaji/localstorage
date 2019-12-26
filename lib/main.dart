@@ -327,16 +327,19 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
      
       index++;
     }
-    //regExp = RegExp(r'(?=(?:\d{3})+$)');
-    //int num = 10000000;
-    // print("hasMatch : " + regExp.hasMatch(num).toString());
-    var kanma = acquiredAssetsSum.toString().replaceAll(RegExp('[\d][?=[\d\d\d+[?!\d]g,'), '$acquiredAssetsSum,');
+    regExp = RegExp(r'([\d][?=[\d{3}]+$]g)');
+    String num = "10000000";
+    //print("kanmaMatch : " + regExp.stringMatch(num.toString()).toString());
+
+    
+    //var kanma = acquiredAssetsSum.toString().replaceAll(RegExp('[\d][?=[\d\d\d+[?!\d]g,'), '$acquiredAssetsSum,');
+    var kanma = num.replaceAll(regExp , '${1},');
     print('replaceAll: '+kanma);
 
-    var num = '10000000';
-    num = num.split(RegExp('[?=[?:\d{3}]+$num,]')).join();
-    print('split: '+num); 
-     
+    //var num = '10000000';
+    //num = num.split(RegExp('[?=[?:\d{3}]+$num,]')).join();
+    //print('split: '+num); 
+    
 
     setState(() {
        gain = valuableAssetsSum - acquiredAssetsSum;
