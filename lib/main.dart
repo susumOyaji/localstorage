@@ -46,7 +46,9 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
   List<String> acquiredAssetsItems = [];//取得資産 stock x value
   List<String> valuableAssetsItems = [];//評価資産 stock X presentvalue
   int acquiredAssetsSum = 0;//取得資産合計
+  String valueSum; 
   int valuableAssetsSum = 0;//評価資産合計
+  String presentvalueSUm;
 
   bool _validateCode = false;
   bool _validateStock = false;
@@ -71,7 +73,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
   int index=0;
   bool purchase = false;
   String stringprice ="";
-  int gain=0;
+  String gain="0";
 
   void _init() async {
     await SharePrefs.setInstance();
@@ -159,7 +161,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
         ),
         label: Text(code+presentvalue +beforeratio + gain,
           style: TextStyle(color: Color(0XFFACACAE),
-                  fontSize:10.0,
+                  fontSize:12.0,
                   fontWeight: FontWeight.bold)),
       ),
     );
@@ -212,13 +214,13 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     //String responce ="6758,200,1665\n6976,400,1746\n395,0,0\n";
     //_incrementCounter();
     await fetch(codes);
-    _addChipfast(code, presentvalue, beforeratio,gain.toString());
+    _addChipfast(code, presentvalue, beforeratio,gain);
     
   }
 
   loadDatGainsum()
   {
-    _addChipfast("code", presentvalue, beforeratio,gain.toString());
+    _addChipfast("code", presentvalue, beforeratio,gain);
   }
 
 
@@ -235,7 +237,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
       _addChip(code, presentvalue, beforeratio);
     }
     
-    _addChipfast("Gain:",gain.toString(),"  取得額: "+acquiredAssetsSum.toString(), "  評価額: "+valuableAssetsSum.toString());
+    _addChipfast("Gain:",gain,"   取得額: "+valueSum, "   評価額: "+presentvalueSUm);
   }
 
 
@@ -253,6 +255,17 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
       await fetch(codes);
       //_addChip(code, presentvalue, beforeratio);
     }
+  }
+
+   String separation(int number){
+      final matcher = new RegExp(r'(\d+)(\d{3})');
+
+      String first_part = number.toString();
+      while ((first_part).contains(matcher)) {
+        first_part = (first_part.replaceAllMapped(matcher, (m) => '${m[1]},${m[2]}') );
+      }
+      print('first_part: $first_part');
+      return first_part;
   }
 
 
@@ -312,30 +325,16 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
 
       setState(() {
         acquiredAssetsSum = acquiredAssetsSum + int.parse(acquiredAssetsItems[index]);//取得資産合計
+        valueSum = separation(acquiredAssetsSum);
         valuableAssetsSum = valuableAssetsSum + int.parse(valuableAssetsItems[index]);//評価資産
+        presentvalueSUm = separation(valuableAssetsSum);
+        gain = separation(valuableAssetsSum - acquiredAssetsSum);
+
       });
      
       index++;
     }
-    regExp = RegExp(r'([\d][?=[\d{3}]+$]g)');
-    String num = "10000000";
-    //print("kanmaMatch : " + regExp.stringMatch(num.toString()).toString());
 
-    
-    //var kanma = acquiredAssetsSum.toString().replaceAll(RegExp('[\d][?=[\d\d\d+[?!\d]g,'), '$acquiredAssetsSum,');
-    var kanma = num.replaceAll(regExp , ",");
-    print('replaceAll: '+kanma);
-
-    //var num = '10000000';
-    //num = num.split(RegExp('[?=[?:\d{3}]+$num,]')).join();
-    //print('split: '+num); 
-    
-
-    setState(() {
-       gain = valuableAssetsSum - acquiredAssetsSum;
-    });
-
-   
 
     regExp = RegExp(r'icoUpGreen'); //new RegExp(r"/[0-9]+/");
     String signal = regExp.stringMatch(json).toString();
@@ -395,7 +394,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
             Expanded(
               child: Container(
                 margin: EdgeInsets.only(left: 10.0, right: 10.0),
-                padding: EdgeInsets.all(1.0),
+                //padding: EdgeInsets.all(1.0),
                 //height: 70.0,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5.0),
@@ -404,17 +403,17 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
                 child: TextField(
                   controller: codeCtrl,
                   decoration: InputDecoration(
-                    labelText: '名前',
-                    border: InputBorder.none,
-                    //hintText: "code",
-                    hintStyle: TextStyle(
+                    labelText: 'CodeNumber',
+                    labelStyle: TextStyle(
                         color: Colors.white,
-                        fontSize: 12.0,
+                        fontSize: 10.0,
+                        //height: 1,
                         fontWeight: FontWeight.bold),
+                    border: InputBorder.none,
                     errorText:
                         _validateCode ? 'The CodeNumber input is empty.' : null,
                     contentPadding: const EdgeInsets.only(
-                        left: 15.0, bottom: 15.0, top: 15.0),
+                        left: 0.0, bottom: 15.0, top: 15.0),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.yellowAccent),
                       borderRadius: BorderRadius.circular(5.0),
@@ -445,10 +444,13 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
                 child: TextField(
                   controller: stockCtrl,
                   decoration: InputDecoration(
+                    labelText: 'Stock',
+                    labelStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10.0,
+                        //height: 1,
+                        fontWeight: FontWeight.bold),
                     border: InputBorder.none,
-                    hintText: "stock",
-                    hintStyle: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
                     errorText:
                         _validateStock ? 'The Stock input is empty.' : null,
                     contentPadding: const EdgeInsets.only(
@@ -489,14 +491,16 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
                       fontWeight: FontWeight.bold),
                   controller: valueCtrl,
                   decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "value",
-                    hintStyle: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                    errorText:
+                    labelText: "value",
+                    labelStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10.0,
+                        //height: 1,
+                        fontWeight: FontWeight.bold),
+                   errorText:
                         _validateValue ? 'The Value input is empty.' : null,
                     contentPadding: const EdgeInsets.only(
-                        left: 25.0, bottom: 15.0, top: 15.0),
+                        left: 0.0, bottom: 15.0, top: 15.0),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.black),
                       borderRadius: BorderRadius.circular(5.0),
