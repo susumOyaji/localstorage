@@ -4,36 +4,33 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
-//import 'package:shared_preferences/shared_preferences.dart';
-//import '../../../../development/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences-0.4.3/lib/shared_preferences.dart';
 import 'shared_prefs.dart';
-//import 'key_finder_interface.dart';
 
-void main() {
-  runApp(MyApp());
-}
+//void main() {
+//  runApp(MyApp());
+//}
 
-//void main() => runApp(MyApp());
+//void main() => runApp(new MyApp());
+void main()=>runApp(new MyApp()); 
+
+
 
 class MyApp extends StatelessWidget {
   @override
-  Widget build(BuildContext _initialScrollOffsetcontext) {
+  Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,  // <- Debug の 表示を OFF
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: _MyAppStateWiget(title: 'Flutter Demo Home Page'),
+      //title: 'Flutter Demo',
+      //theme: ThemeData(primarySwatch: Colors.blue,),
+      home: _MyAppStateWiget(),
     );
   }
 }
 
 class _MyAppStateWiget extends StatefulWidget {
-  _MyAppStateWiget({Key key, this.title}) : super(key: key);
-  final String title;
-
-  //_MyAppStateWiget();
+ // _MyAppStateWiget({Key key, this.title}) : super(key: key);
+ // final String title;
+  
   @override
   _MyAppWigetState createState() => _MyAppWigetState();
 }
@@ -45,9 +42,13 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
 
   List<String> acquiredAssetsItems = [];//取得資産 stock x value
   List<String> valuableAssetsItems = [];//評価資産 stock X presentvalue
+  List<String> acquiredAssetsSumString = [];
+  List<String> valuableAssetsSumString = [];
   int acquiredAssetsSum = 0;//取得資産合計
-  String valueSum; 
   int valuableAssetsSum = 0;//評価資産合計
+
+
+  String valueSum;
   String presentvalueSUm;
 
   bool _validateCode = false;
@@ -60,7 +61,8 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
 
   static String code; //
   static String presentvalue = "non"; //現在値
-  static String beforeratio = "non"; //前日比
+  static String changePriceRate = "non"; //前日比%
+  static String changePriceValue = "non"; //前日比¥
   static bool signalstate = true; //Up or Down
 
   var _chipListfast = List<Chip>();
@@ -88,7 +90,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
 
     await loadDatafast("998407.O");
     await loadDatafast("^DJI");
-    //await loadDatGainsum();
+    
     await loadData();
     
   }
@@ -142,6 +144,8 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     _decrementCounter();//save to countDown
   }
   */
+
+ 
   
   void _addChipfast(String code,String presentvalue, String beforeratio,String gain) {
     var chipKey = Key('chip_key_$_keyNumberfast');
@@ -151,18 +155,18 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     _chipListfast.add(
       Chip(
         key: chipKey,
-        backgroundColor: Color(0XFF8069A1),//Colors.orange,
+        backgroundColor: Color(0XFF8069A1),
         elevation: 4,
         //shadowColor: Colors.white,
         padding: EdgeInsets.all(4),
         avatar: CircleAvatar(
-          backgroundColor:  signalstate ? Colors.red : Colors.green,//Colors.green, //.grey.shade800,
-          //child: Text(_keyNumberfast.toString()),
+          backgroundColor:  signalstate ? Colors.red : Colors.green,
         ),
-        label: Text(code+presentvalue +beforeratio + gain,
+        label: Text(code + presentvalue + beforeratio + gain,
           style: TextStyle(color: Color(0XFFACACAE),
-                  fontSize:12.0,
-                  fontWeight: FontWeight.bold)),
+            fontSize:12.0,
+            fontWeight: FontWeight.bold)
+        ),
       ),
     );
   }
@@ -183,14 +187,19 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
         avatar: CircleAvatar(
           maxRadius: 10.0,
           backgroundColor:
-              signalstate ? Colors.red : Colors.green, //.grey.shade800,
+              signalstate ? Colors.red : Colors.green,
           child: Text(_keyNumber.toString()),
         ),
         label: Text(code + " " + presentvalue + "  " + deforerasio,
             style: TextStyle(
-                color: Color(0XFFACACAE),//Colors.white,
+                color: Color(0XFFACACAE),
                 fontSize: 10.0,
-                fontWeight: FontWeight.bold)),
+                fontWeight: FontWeight.bold)
+        ),
+        
+        //onSelected：() => _deleteChip(chipKey),
+        //onPressed:() => _deleteChip(chipKey),
+        //deleteButtonTooltipMessage: "dellete",
         onDeleted: () => _deleteChip(chipKey),
       ),
     );
@@ -205,7 +214,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     SharePrefs.setCodeItems(codeItems);SharePrefs.setStockItems(stockItems);SharePrefs.setValueItems(valueItems);
     setState(() {
       _keyNumber--;
-      //loadData();
+      
     });
   }
 
@@ -214,13 +223,13 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     //String responce ="6758,200,1665\n6976,400,1746\n395,0,0\n";
     //_incrementCounter();
     await fetch(codes);
-    _addChipfast(code, presentvalue, beforeratio,gain);
+    _addChipfast(code, "  "+presentvalue, "  "+changePriceRate,"");
     
   }
 
   loadDatGainsum()
   {
-    _addChipfast("code", presentvalue, beforeratio,gain);
+    _addChipfast("code", presentvalue, changePriceRate,gain);
   }
 
 
@@ -234,7 +243,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
 
     for (String codes in codeItems) {
       await fetch(codes);
-      _addChip(code, presentvalue, beforeratio);
+      _addChip(code, presentvalue, changePriceRate);
     }
     
     _addChipfast("Gain:",gain,"   取得額: "+valueSum, "   評価額: "+presentvalueSUm);
@@ -244,7 +253,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
   
   addfetch(String codes) async {
     await fetch(codes);
-    _addChip(codes, presentvalue, beforeratio);
+    _addChip(codes, presentvalue, changePriceRate);
   }
 
 
@@ -255,6 +264,9 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
       await fetch(codes);
       //_addChip(code, presentvalue, beforeratio);
     }
+    setState(() {
+      
+    });
   }
 
    String separation(int number){
@@ -286,28 +298,40 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     });
 
    
+    //regExp = RegExp(r'[+-][0-9]{1,}.[0-9]{1,}.[+-]..[0-9]{1,}%.');//日経平均
+    //regExp = RegExp(r'[0-9]{1,}[,][0-9]{1,}[.][0-9]{1,}');//DOW平均
     regExp = RegExp(r'[0-9]{1,},[0-9]{1,}'); //1,234;
     setState(() {
       value = regExp.stringMatch(json).toString();//現在値
       presentvalue = value;
     });
-
-
-
-
     print("StockPrice : " + value);
-
     print("string to int : " + intprice.toString());
     print("hasMatch : " + regExp.hasMatch(json).toString());
     
 
-    regExp = RegExp(r'[+-][0-9]{1,}.[+-]..[0-9]{1,}%.'); 
-    String change = regExp.stringMatch(json).toString();
-    print("Change : " + change);
+    //regExp = RegExp(r'[+-][0-9]{1,}.[+-]..[0-9]{1,}%.'); 
+    //regExp = RegExp(r'[+-][0-9]{1,}.[0-9]{1,}.[+-]..[0-9]{1,}%.');//日経平均
+    regExp = RegExp(r'["][+-][0-9]{1,}[.][0-9]{1,}');//DOW前日比¥
     setState(() {
-      beforeratio = change; //前日比%
+      String change = regExp.stringMatch(json).toString();
+      change = change.replaceAll('"', "");
+      changePriceRate = change; //前日比%
+      print("Change : " + changePriceRate);
     });
     print("Change : " + regExp.hasMatch(json).toString());
+
+    regExp = RegExp(r'["][+-][0-9]{1,}[.][0-9]{1,}');//DOW前日比%
+    setState(() {
+      String change = regExp.stringMatch(json).toString();
+      change = change.replaceAll('"', "");
+      changePriceValue = change; //前日比%
+      print("ChangeValue : " + changePriceRate);
+    });
+    print("ChangeValue: " + regExp.hasMatch(json).toString());
+
+
+
 
     if (purchase == true){
       try {
@@ -326,8 +350,12 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
       setState(() {
         acquiredAssetsSum = acquiredAssetsSum + int.parse(acquiredAssetsItems[index]);//取得資産合計
         valueSum = separation(acquiredAssetsSum);
+        acquiredAssetsSumString.add(valueSum.toString());
+
         valuableAssetsSum = valuableAssetsSum + int.parse(valuableAssetsItems[index]);//評価資産
         presentvalueSUm = separation(valuableAssetsSum);
+        valuableAssetsSumString.add(presentvalueSUm.toString());
+
         gain = separation(valuableAssetsSum - acquiredAssetsSum);
 
       });
@@ -367,7 +395,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
               spacing: 8.0,
               runSpacing: 0.0,
               direction: Axis.horizontal,
-              children: _chipListfast,
+              children:  _chipListfast,
             ),
           ),
         ],
@@ -376,7 +404,6 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
   }
 
   bool _active = false;
-
   void _changeSwitch(bool e) => setState(() => _active = e);
  
 
@@ -410,8 +437,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
                         //height: 1,
                         fontWeight: FontWeight.bold),
                     border: InputBorder.none,
-                    errorText:
-                        _validateCode ? 'The CodeNumber input is empty.' : null,
+                    errorText: _validateCode ? 'The CodeNumber input is empty.' : null,
                     contentPadding: const EdgeInsets.only(
                         left: 0.0, bottom: 15.0, top: 15.0),
                     focusedBorder: OutlineInputBorder(
@@ -419,7 +445,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
                       borderRadius: BorderRadius.circular(5.0),
                     ),
                   ),
-                  autocorrect: true,
+                  autocorrect: false,
                   onSubmitted: (text) {
                     if (text.isEmpty) {
                       _validateCode = true;
@@ -673,6 +699,7 @@ The Neko is very cute. The Neko is super cute. Neko has been sleeping during the
             ],
           ),
         ),
+        
       ),
     );
   }
