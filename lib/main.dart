@@ -6,6 +6,8 @@ import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'shared_prefs.dart';
 
+//import 'com.google.android.material:material:1.0.0-beta01'
+
 //void main() {
 //  runApp(MyApp());
 //}
@@ -66,7 +68,7 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
   static bool signalstate = true; //Up or Down
 
   var _chipListfast = List<Chip>();
-  var _chipList = List<Chip>();
+  var _chipList = List<InputChip>();
   var _keyNumber = 0;
   var _keyNumberfast = 0;
   String price = "";
@@ -178,25 +180,42 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
     _keyNumber++;
 
     _chipList.add(
-      Chip(
+      InputChip(
+        showCheckmark: false, 
         key: chipKey,
         backgroundColor: Color(0XFF12445D),
         elevation: 8,
         //shadowColor: Colors.white,
-        //padding: EdgeInsets.all(4),
+        padding: EdgeInsets.all(4),
         avatar: CircleAvatar(
           maxRadius: 10.0,
           backgroundColor:
               signalstate ? Colors.red : Colors.green,
           child: Text(_keyNumber.toString()),
         ),
+        //onDeleted: () {
+        //    setState(() {
+              //_cast.removeWhere((Actor entry) {
+              //  return entry.name == actor.name;
+        //      });
+            
+       // },
         label: Text(code + " " + presentvalue + "  " + deforerasio,
             style: TextStyle(
                 color: Color(0XFFACACAE),
                 fontSize: 10.0,
                 fontWeight: FontWeight.bold)
         ),
-        
+        //selected: true,//index,
+        //onSelected: (bool selected) {
+        //      setState(() {
+        //        _reloadData();//_deleteChip(chipKey);
+                //_value = selected ? index : null;
+        //      });
+        //    },
+        //     onDeleted: () => state.deleteChip(profile),
+        onSelected: (_) => _reloadData(),
+
         //onSelected：() => _deleteChip(chipKey),
         //onPressed:() => _deleteChip(chipKey),
         //deleteButtonTooltipMessage: "dellete",
