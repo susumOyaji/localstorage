@@ -214,16 +214,34 @@ class _MyAppWigetState extends State<_MyAppStateWiget> {
         //      });
         //    },
         //     onDeleted: () => state.deleteChip(profile),
-        onSelected: (_) => _reloadData(),
-
+        //onSelected: (_) => _msg(chipKey),//_reloadData(),
+         
         //onSelected：() => _deleteChip(chipKey),
-        //onPressed:() => _deleteChip(chipKey),
+        onPressed:(){
+           AlertDialog(
+              title: Text("タイトル"),
+              content: Text("メッセージメッセージメッセージメッセージメッセージメッセージ"),
+              actions: <Widget>[
+              // ボタン領域
+              FlatButton(
+                child: Text("Cancel"),
+                onPressed: () => Navigator.pop(context),
+              ),
+              FlatButton(
+                child: Text("OK"),
+                onPressed: () => Navigator.pop(context),
+              ),
+              ],
+          );
+        },
         //deleteButtonTooltipMessage: "dellete",
         onDeleted: () => _deleteChip(chipKey),
       ),
     );
   }
 
+
+  
   void _deleteChip(Key chipKey) {
     setState(() => _chipList.removeWhere((Widget w) => w.key == chipKey));
     ValueKey<String> listJsonData = chipKey;
